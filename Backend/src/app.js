@@ -1,6 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import authRouter from "./routes/auth.routes.js"
 
 const app = express();
 
@@ -12,7 +13,10 @@ app.use(cookieParser()); // Cookie parser middleware
 
 // Base API route for healthcheck/testing
 app.get("/", (_req, res) => {
-    res.status(200).json({ message: "Server is running" });
+  res.status(200).json({ message: "Server is running" });
 });
+
+// Routes
+app.use("/api/auth", authRouter);
 
 export default app;
