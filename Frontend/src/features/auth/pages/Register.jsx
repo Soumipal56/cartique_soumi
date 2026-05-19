@@ -328,6 +328,8 @@ const Register = () => {
               </label>
             </div>
 
+            <a href="/api/auth/google" className="justify-center underline text-[#d3c5ac] font-['Inter'] font-medium text-xs sm:text-sm">Continue with Google</a>
+
             {/* Submit Button */}
             <button
               type="submit"
