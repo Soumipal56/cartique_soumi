@@ -11,11 +11,11 @@ app.use(morgan('dev')); // HTTP request logger
 app.use(express.json()); // Body parser for JSON
 app.use(express.urlencoded({ extended: true })); // Body parser for URL-encoded data
 app.use(cookieParser()); // Cookie parser middleware
-app.use(cors({
-  origin:"http://localhost:5173",
-  methods:["GET","POST","PUT","DELETE"],
-  credentials:true
-})); // Cross-Origin Resource Sharing middleware
+// app.use(cors({
+//   origin:"http://localhost:5173",
+//   methods:["GET","POST","PUT","DELETE"],
+//   credentials:true
+// })); // Cross-Origin Resource Sharing middleware
 
 // Base API route for healthcheck/testing
 app.get("/", (_req, res) => {
