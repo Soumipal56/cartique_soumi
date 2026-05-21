@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { useAuth } from '../hook/useAuth';
 import { useNavigate } from 'react-router';
+import ContinueWithGoogle from '../components/ContinueWithGoogle';
 
 const Login = () => {
   const { handleLogin } = useAuth();
@@ -195,6 +196,8 @@ const Login = () => {
                   <span className="text-[10px] text-[#b7b5b4]">Min 8 chars</span>
                 )}
               </div>
+
+
               <div className="relative">
                 <input
                   id="password"
@@ -219,6 +222,8 @@ const Login = () => {
                 </button>
               </div>
             </div>
+
+            <ContinueWithGoogle/>
 
             {/* Submit Button */}
             <button
@@ -258,4 +263,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login;
