@@ -12,6 +12,6 @@ const upload = multer({
 
 const router = Router();
 
-router.post("/", authenticateSeller, upload.array("image", 7), createProduct)
+router.post("/", authenticateSeller, upload.array("images", 7), createProduct)
 
 export default router;
