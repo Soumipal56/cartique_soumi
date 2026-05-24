@@ -19,7 +19,7 @@ const router = Router();
  * @desc Create a new product
  * @access Private (Seller only)
  */
-router.post("/", authenticateSeller, createProductValidator, upload.array("images", 7), createProduct)
+router.post("/", authenticateSeller, upload.array("images", 7), createProductValidator, createProduct)
 
 /**
  * @route GET /api/products/seller
