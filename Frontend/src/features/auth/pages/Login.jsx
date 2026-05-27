@@ -34,9 +34,13 @@ const Login = () => {
         if (!validate()) return;
         setIsSubmitting(true);
         try {
-            await handleLogin({ email: formData.email, password: formData.password });
+            const user = await handleLogin({ email: formData.email, password: formData.password });
             setSuccessMessage('Logged in successfully!');
-            setTimeout(() => navigate("/"), 1500);
+            if(user.role === "seller"){
+                navigate("/seller/dashboard")
+            } else {
+                navigate("/")
+            }
         } catch (error) {
             setErrors({ submit: 'Failed to login. Please check credentials.' });
         } finally {

@@ -2,7 +2,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router'
 
-const Protected = () => {
+const Protected = ({children, role}) => {
 
   const user = useSelector(state => state.auth.user) 
   const loading = useSelector(state => state.auth.loading) 
@@ -11,13 +11,17 @@ const Protected = () => {
     return <div>Loading</div>
   }
 
+  // Not logged in → redirect to login
   if(!user){
     return <Navigate to="/login"/>
   }
 
-  return (
-    <div>Protected</div>
-  )
+  // Logged in but wrong role → redirect to home
+  if(role && user.role !== role){
+    return <Navigate to="/"/>
+  }
+
+  return children
 }
 
 export default Protected

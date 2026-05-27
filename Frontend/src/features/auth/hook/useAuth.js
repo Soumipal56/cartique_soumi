@@ -10,14 +10,16 @@ export const useAuth = () => {
 
         const data = await register({email, contact, password, fullname, isSeller})
 
-        dispatch(setUser(data.user))   
+        dispatch(setUser(data.user))  
+        return data.user 
     }  
     
     async function handleLogin({email, password}){
 
         const data = await login({email, password})
 
-        dispatch(setUser(data.user))    
+        dispatch(setUser(data.user)) 
+        return data.user   
     }
 
     async function handleGetMe() {
