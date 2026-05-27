@@ -3,7 +3,7 @@ import { authenticateSeller } from "../middleware/auth.middleware.js";
 import { createProduct } from "../controllers/product.controller.js";
 import multer from "multer";
 import { createProductValidator } from "../validator/product.validator.js";
-import { getSellerProducts } from "../controllers/product.controller.js";
+import { getSellerProducts, getAllProducts } from "../controllers/product.controller.js";
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -27,5 +27,12 @@ router.post("/", authenticateSeller, upload.array("images", 7), createProductVal
  * @access Private (Seller only)
  */
 router.get("/seller", authenticateSeller, getSellerProducts)
+
+/**
+ * @route GET /api/products
+ * @desc Get all products
+ * @access Public
+ */
+router.get("/", getAllProducts)
 
 export default router;

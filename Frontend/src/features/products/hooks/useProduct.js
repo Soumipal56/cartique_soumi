@@ -1,4 +1,4 @@
-import { createProduct, getSellerProduct } from "../service/product.api";
+import { createProduct, getSellerProduct, getAllProducts } from "../service/product.api";
 import { setSellerProducts } from "../state/product.slice";
 import { useDispatch } from "react-redux";
 
@@ -23,5 +23,15 @@ export const useProduct = () => {
         }
     }
 
-    return { handleCreateProduct, handleGetSellerProduct }
+    async function handleGetAllProducts() {
+        try {
+            const data = await getAllProducts()
+            return data.products
+        } catch (error) {
+            console.error("Failed to fetch all products:", error.response?.status, error.response?.data?.message || error.message)
+            return []
+        }
+    }
+
+    return { handleCreateProduct, handleGetSellerProduct, handleGetAllProducts }
 }

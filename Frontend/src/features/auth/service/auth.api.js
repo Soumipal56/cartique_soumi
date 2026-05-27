@@ -20,5 +20,4 @@ export async function getMe() {
     return response.data;
 }
 
-
 export default authApiInstance
