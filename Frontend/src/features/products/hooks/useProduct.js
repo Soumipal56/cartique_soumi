@@ -13,10 +13,14 @@ export const useProduct = () => {
     }
 
     async function handleGetSellerProduct() {
-
-        const data = await getSellerProduct()
-        dispatch(setSellerProducts(data.products))
-        return data.products
+        try {
+            const data = await getSellerProduct()
+            dispatch(setSellerProducts(data.products))
+            return data.products
+        } catch (error) {
+            console.error("Failed to fetch seller products:", error.response?.status, error.response?.data?.message || error.message)
+            return []
+        }
     }
 
     return { handleCreateProduct, handleGetSellerProduct }
