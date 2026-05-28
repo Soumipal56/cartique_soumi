@@ -62,4 +62,22 @@ export async function getAllProducts(req, res) {
         console.error("Error fetching all products:", error);
         res.status(500).json({ message: "Failed to fetch products", error: error.message, success: false });
     }
+}
+
+export async function getProductById(req, res) {
+    try {
+        const { id } = req.params;
+        const product = await productModel.findById(id).populate("seller", "name email");
+        if (!product) {
+            return res.status(404).json({ message: "Product not found", success: false });
+        }
+        res.status(200).json({
+            message: "Product fetched successfully",
+            success: true,
+            product
+        });
+    } catch (error) {
+        console.error("Error fetching product:", error);
+        res.status(500).json({ message: "Failed to fetch product", error: error.message, success: false });
+    }
 }

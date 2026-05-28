@@ -184,6 +184,7 @@ const Dashboard = () => {
                                         product={product}
                                         formatPrice={formatPrice}
                                         formatDate={formatDate}
+                                        onClick={() => navigate(`/product/${product._id}`)}
                                     />
                                 ))}
                             </div>
@@ -198,7 +199,7 @@ const Dashboard = () => {
 /* ────────────────────────────────────────────
    Product Card Component
    ──────────────────────────────────────────── */
-const ProductCard = ({ product, formatPrice, formatDate }) => {
+const ProductCard = ({ product, formatPrice, formatDate, onClick }) => {
     const [activeImage, setActiveImage] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
     const images = product.images || [];
@@ -215,7 +216,8 @@ const ProductCard = ({ product, formatPrice, formatDate }) => {
 
     return (
         <div
-            className="glass-card rounded-[2rem] overflow-hidden group transition-all duration-500 hover:border-[#10b981]/30 hover:shadow-[0_10px_40px_rgba(16,185,129,0.15)] hover:-translate-y-1 flex flex-col"
+            onClick={onClick}
+            className="cursor-pointer glass-card rounded-[2rem] overflow-hidden group transition-all duration-500 hover:border-[#10b981]/30 hover:shadow-[0_10px_40px_rgba(16,185,129,0.15)] hover:-translate-y-1 flex flex-col"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >

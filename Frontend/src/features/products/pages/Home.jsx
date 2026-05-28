@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useProduct } from '../hooks/useProduct';
 import { Link } from 'react-router';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 const Home = () => {
     const user = useSelector(state => state.auth.user);
     const { handleGetAllProducts } = useProduct();
+    const navigate = useNavigate()
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -44,9 +46,9 @@ const Home = () => {
                     {user ? (
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-[#10b981] flex items-center justify-center text-gray-900 font-bold">
-                                {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
+                                {user.fullname ? user.fullname.charAt(0).toUpperCase() : 'U'}
                             </div>
-                            <span className="text-sm font-medium text-gray-300">{user.username || 'User'}</span>
+                            <span className="text-sm font-medium text-gray-300">{user.fullname || 'User'}</span>
                         </div>
                     ) : (
                         <span className="text-sm font-medium text-gray-500">Not logged in</span>
@@ -81,7 +83,7 @@ const Home = () => {
                 ) : products.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {products.map(product => (
-                            <ProductCard key={product._id} product={product} formatPrice={formatPrice} />
+                            <ProductCard onClick={() => navigate(`/product/${product._id}`)} key={product._id} product={product} formatPrice={formatPrice} />
                         ))}
                     </div>
                 ) : (
@@ -94,9 +96,9 @@ const Home = () => {
     );
 };
 
-const ProductCard = ({ product, formatPrice }) => {
+const ProductCard = ({ product, formatPrice, onClick }) => {
     return (
-        <div className="group bg-white/5 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden hover:border-[#10b981]/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(16,185,129,0.1)]">
+        <div onClick={onClick} className="cursor-pointer group bg-white/5 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden hover:border-[#10b981]/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(16,185,129,0.1)]">
             <div className="aspect-[4/5] bg-black/40 relative overflow-hidden">
                 {product.images && product.images.length > 0 ? (
                     <img 
