@@ -165,6 +165,10 @@ const SellerProductDetails = () => {
                              <div className="text-3xl font-semibold text-[#10b981] font-outfit">
                                  {formatPrice(product.price)}
                              </div>
+                             <div className="flex items-center space-x-1 text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full text-sm font-semibold">
+                                 <span>⭐</span>
+                                 <span>{product.rating ? Number(product.rating).toFixed(1) : "0.0"}/10</span>
+                             </div>
                              <button onClick={() => {
                                  setLiked(!liked);
                                  setLikes(liked ? likes - 1 : likes + 1);

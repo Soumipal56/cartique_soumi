@@ -36,8 +36,10 @@ export async function addProductVariant(productId, newProductVariant) {
         formData.append(`images`, image.file)
     });
 
-    formData.append("stock", newProductVariant.stock)
-    formData.append("priceAmount", newProductVariant.price.amount)
+    formData.append("stock", newProductVariant.stock);
+    if (newProductVariant.price && newProductVariant.price.amount !== "" && newProductVariant.price.amount != null) {
+        formData.append("priceAmount", newProductVariant.price.amount);
+    }
     formData.append("attributes", JSON.stringify(newProductVariant.attributes))
 
     const response = await productApiInstance.post(`/${productId}/variants`, formData)

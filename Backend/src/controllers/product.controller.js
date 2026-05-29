@@ -111,7 +111,8 @@ export async function addProductVariant(req, res){
         }))).forEach(img => images.push(img));
     }
 
-    const price = req.body.priceAmount;
+    const priceAmount = req.body.priceAmount;
+    const price = (priceAmount !== undefined && priceAmount !== "null" && priceAmount !== "") ? Number(priceAmount) : undefined;
     const stock = req.body.stock;
     const attributes = JSON.parse(req.body.attributes || "{}");
     // Ensure attributes is an object (not an array) before proceeding
@@ -122,8 +123,8 @@ export async function addProductVariant(req, res){
     product.variants.push({
         images,
         attributes,
-        stock: stock || 0,
-        price: { amount: price, currency: req.body.priceCurrency || product.price.currency }
+        stock: Number(stock),
+        price: { amount: Number(price) || 0, currency: req.body.priceCurrency || product.price.currency }
     });
 
     await product.save();
