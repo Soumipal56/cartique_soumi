@@ -115,6 +115,12 @@ const SellerProductDetails = () => {
         );
     }
 
+    const getVariantRating = (variant) => {
+        if (!variant.ratings || variant.ratings.length === 0) return "0.0";
+        const total = variant.ratings.reduce((acc, r) => acc + r.score, 0);
+        return (total / variant.ratings.length).toFixed(1);
+    };
+
     const images = product.images || [];
 
     return (
@@ -171,7 +177,7 @@ const SellerProductDetails = () => {
                              </div>
                              <button onClick={() => {
                                  setLiked(!liked);
-                                 setLikes(liked ? likes - 1 : likes + 1);
+                                 setLikes(prev => liked ? Math.max(0, prev - 1) : prev + 1);
                              }} className="flex items-center space-x-1 text-gray-400 hover:text-[#10b981] transition-colors">
                                  {liked ? "❤️" : "🤍"}
                                  <span>{likes}</span>
@@ -213,6 +219,10 @@ const SellerProductDetails = () => {
                                  {variant.price && (
                                    <p className="text-[#10b981] mt-2">{formatPrice(variant.price)}</p>
                                  )}
+                                 <div className="flex items-center space-x-1 text-yellow-400 bg-yellow-400/10 px-3 py-1 mt-3 w-max rounded-full text-xs font-semibold">
+                                     <span>⭐</span>
+                                     <span>{getVariantRating(variant)}/10 ({variant.ratings?.length || 0} reviews)</span>
+                                 </div>
                               </div>
                             ))}
                           </div>

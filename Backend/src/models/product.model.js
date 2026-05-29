@@ -79,7 +79,22 @@ const productSchema = new mongoose.Schema({
                     enum: ["USD", "EUR", "GBP", "JPY", "INR"],
                     default: "INR"
                 }
-            }
+            },
+            ratings: [
+                {
+                    user: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: "user",
+                        required: true
+                    },
+                    score: {
+                        type: Number,
+                        required: true,
+                        min: 0,
+                        max: 10
+                    }
+                }
+            ]
         }
     ] 
 }, {
