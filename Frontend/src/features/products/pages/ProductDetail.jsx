@@ -10,15 +10,24 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
+    const [selectedVariantIdx, setSelectedVariantIdx] = useState(null);
 
     useEffect(() => {
         if (!resolvedId) return;
         handleGetProductById(resolvedId)
             .then(data => {
+                console.log("Fetched product detail:", data);
                 setProduct(data);
             })
             .finally(() => setIsLoading(false));
     }, [resolvedId]);
+
+    // Set default variant index when product data is loaded
+    useEffect(() => {
+        if (product && product.variants && product.variants.length > 0) {
+            setSelectedVariantIdx(0);
+        }
+    }, [product]);
 
     const formatPrice = (price) => {
         if (!price || price.amount == null || isNaN(price.amount)) return '';
@@ -49,6 +58,35 @@ const ProductDetail = () => {
     }
 
     const images = product.images || [];
+    const displayedImages = selectedVariantIdx !== null && product.variants && product.variants[selectedVariantIdx] && product.variants[selectedVariantIdx].images && product.variants[selectedVariantIdx].images.length > 0 ? product.variants[selectedVariantIdx].images : images;
+
+    // Helper to safely get a value from the selected variant or fall back to the main product
+    const getVariantValue = (key) => {
+        if (selectedVariantIdx === null) return product[key];
+        const variant = product.variants[selectedVariantIdx];
+        if (!variant) return product[key];
+        // For nested objects like price or attributes, handle specially
+        if (key === 'price') return variant.price || product.price;
+        if (key === 'stock') return variant.stock != null ? variant.stock : product.stock;
+        if (key === 'attributes') {
+            // Merge attribute maps, preferring variant values
+            const merged = new Map();
+            // Helper to add entries from either Map or plain object
+            const addEntries = (src) => {
+                if (!src) return;
+                if (src instanceof Map) {
+                    for (const [k, v] of src.entries()) merged.set(k, v);
+                } else {
+                    // Assume plain object
+                    for (const [k, v] of Object.entries(src)) merged.set(k, v);
+                }
+            };
+            addEntries(product.attributes);
+            addEntries(variant.attributes);
+            return merged;
+        }
+        return variant[key] !== undefined ? variant[key] : product[key];
+    };
 
     return (
         <div className="min-h-screen bg-[#050505] font-inter text-white selection:bg-[#10b981]/30 relative overflow-hidden pb-20">
@@ -70,17 +108,17 @@ const ProductDetail = () => {
                     {/* Image Gallery */}
                     <div className="flex flex-col gap-4">
                         <div className="w-full aspect-square bg-black/40 rounded-3xl overflow-hidden border border-white/5 relative group">
-                            {images.length > 0 ? (
-                                <img src={images[activeImage].url} alt={product.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            {displayedImages.length > 0 ? (
+                                <img src={displayedImages[activeImage].url} alt={product.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-600">No Image</div>
                             )}
                         </div>
-                        {images.length > 1 && (
+                        {displayedImages.length > 1 && (
                             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                                {images.map((img, i) => (
+                                {displayedImages.map((img, i) => (
                                     <button 
-                                        key={img._id} 
+                                        key={img._id || i} 
                                         onClick={() => setActiveImage(i)}
                                         className={`w-24 h-24 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? 'border-[#10b981]' : 'border-transparent opacity-50 hover:opacity-100'}`}
                                     >
@@ -107,17 +145,17 @@ const ProductDetail = () => {
   <h3 className="text-lg font-medium mb-3 font-outfit text-gray-200">Variants</h3>
   {product.variants && product.variants.length > 0 ? (
     product.variants.map((variant, idx) => (
-      <div key={idx} className="border-b border-white/10 pb-4 mb-4 last:border-0 last:pb-0 last:mb-0">
-        <p className="text-gray-400">Stock: {variant.stock}</p>
+      <div key={idx} className={`border-b border-white/10 pb-4 mb-4 last:border-0 last:pb-0 last:mb-0 ${selectedVariantIdx===idx ? 'bg-white/10' : ''}`} onClick={() => setSelectedVariantIdx(idx)}>
+                 <p className="text-gray-400">Stock: {getVariantValue('stock')}</p>
         {variant.price && (
-          <p className="text-[#10b981]">Price: {formatPrice(variant.price)}</p>
+          <p className="text-[#10b981]">Price: {formatPrice(getVariantValue('price'))}</p>
         )}
         {variant.attributes && (
-          <div className="mt-2">
-            {Array.from(variant.attributes.entries()).map(([key, value]) => (
-              <p key={key} className="text-gray-400">{key}: {value}</p>
-            ))}
-          </div>
+            <div className="mt-2">
+                {(variant.attributes instanceof Map ? Array.from(variant.attributes.entries()) : Object.entries(variant.attributes)).map(([key, value]) => (
+                    <p key={key} className="text-gray-400">{key}: {value}</p>
+                ))}
+            </div>
         )}
       </div>
     ))

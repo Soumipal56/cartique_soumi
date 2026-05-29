@@ -97,6 +97,22 @@ const Home = () => {
 };
 
 const ProductCard = ({ product, formatPrice, onClick }) => {
+    // Gather unique color values from variants (supports Map or plain object)
+    const colors = [];
+    if (product.variants && product.variants.length > 0) {
+        product.variants.forEach((variant) => {
+            const attrs = variant.attributes;
+            if (!attrs) return;
+            let colorVal;
+            if (attrs instanceof Map) {
+                colorVal = attrs.get('color');
+            } else {
+                colorVal = attrs['color'];
+            }
+            if (colorVal && !colors.includes(colorVal)) colors.push(colorVal);
+        });
+    }
+
     return (
         <div onClick={onClick} className="cursor-pointer group bg-white/5 border border-white/5 backdrop-blur-md rounded-2xl overflow-hidden hover:border-[#10b981]/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(16,185,129,0.1)]">
             <div className="aspect-[4/5] bg-black/40 relative overflow-hidden">
@@ -114,9 +130,21 @@ const ProductCard = ({ product, formatPrice, onClick }) => {
             
             <div className="p-5">
                 <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-outfit text-lg font-medium text-white line-clamp-1 group-hover:text-[#10b981] transition-colors">{product.title}</h3>
+                    <h3 className="font-outfit text-lg font-medium text-white line-clamp-1 group-hover:text-[#10b981] transition-colors">
+                        {product.title}
+                    </h3>
                 </div>
                 <p className="text-sm text-gray-400 line-clamp-2 mb-4 h-10">{product.description}</p>
+                {/* Color badges */}
+                {colors.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-2">
+                        {colors.map((c) => (
+                            <span key={c} className="px-2 py-1 text-xs rounded bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30">
+                                {c}
+                            </span>
+                        ))}
+                    </div>
+                )}
                 <div className="flex justify-between items-center">
                     <span className="font-outfit text-lg font-semibold text-[#10b981]">
                         {formatPrice(product.price)}

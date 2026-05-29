@@ -23,7 +23,7 @@ export async function createProduct(req, res, next) {
             title,
             description,
             price:{
-                amount: priceAmount,
+                amount: priceAmount ? Number(priceAmount) : 0,
                 currency: priceCurrency || "INR"
             },
             images,

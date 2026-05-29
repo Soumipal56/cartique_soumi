@@ -14,6 +14,7 @@ const SellerProductDetails = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
     const [newVariant, setNewVariant] = useState({ images: [], attributes: {}, price: { amount: '', currency: 'INR' }, stock: '' });
+    const [selectedVariantIdx, setSelectedVariantIdx] = useState(null); // tracks selected variant in seller view
     const [attrEntries, setAttrEntries] = useState([{ key: '', value: '' }]);
 
     const handleVariantImages = (e) => {
@@ -68,6 +69,10 @@ const SellerProductDetails = () => {
             // Refresh product data to show new variant
             const refreshed = await handleGetProductById(resolvedId);
             setProduct(refreshed);
+            // Auto-select the newly added variant (last one)
+            if (refreshed && refreshed.variants && refreshed.variants.length > 0) {
+                setSelectedVariantIdx(refreshed.variants.length - 1);
+            }
         } catch (err) {
             console.error('Error adding variant:', err);
             alert('Failed to add variant. See console for details.');
@@ -83,6 +88,12 @@ const SellerProductDetails = () => {
             .then(data => {
                 setProduct(data);
                 setLikes(data.likes || 0);
+                // Auto-select first variant if available
+                if (data.variants && data.variants.length > 0) {
+                    setSelectedVariantIdx(0);
+                } else {
+                    setSelectedVariantIdx(null);
+                }
             })
             .finally(() => setIsLoading(false));
     }, [resolvedId]);
@@ -193,7 +204,9 @@ const SellerProductDetails = () => {
                           <div className="mt-8">
                             <h3 className="text-lg font-medium mb-3 font-outfit text-gray-200">Variants</h3>
                             {product.variants.map((variant, vIdx) => (
-                              <div key={vIdx} className="bg-white/5 border border-white/5 rounded-2xl p-4 mb-4">
+                              <div key={vIdx}
+                                   className={`bg-white/5 border ${selectedVariantIdx === vIdx ? 'border-[#10b981]' : 'border-white/5'} rounded-2xl p-4 mb-4`}
+                                   onClick={() => setSelectedVariantIdx(vIdx)}>
                                 {/* Variant Images */}
                                 {variant.images && variant.images.length > 0 && (
                                   <div className="flex gap-2 mb-2 overflow-x-auto">
