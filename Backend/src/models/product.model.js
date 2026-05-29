@@ -53,7 +53,9 @@ const productSchema = new mongoose.Schema({
             },
             stock: {
                 type: Number,
-                default: 0
+                required: true,
+                min: 0,
+                // Stock must be provided and non-negative
             },
             attributes: {
                 type: Map,

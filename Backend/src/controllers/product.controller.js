@@ -1,6 +1,7 @@
 import productModel from "../models/product.model.js";
 import { uploadFile } from "../services/storage.service.js";
 
+
 export async function createProduct(req, res, next) {
     try {
         const { title, description, priceAmount, priceCurrency } = req.body;
@@ -82,4 +83,56 @@ export async function getProductById(req, res) {
     }
 }
 
-export 
+export async function addProductVariant(req, res){
+
+    const productId = req.params.productId;
+
+    const product = await productModel.findOne({
+        _id: productId,
+        seller: req.user._id
+    });
+
+    if (!product) {
+        return res.status(404).json({
+            message: "Product not found",
+            success: false
+        });
+    }
+
+    const files = req.files;
+    const images = [];
+    if (files && files.length > 0) {
+        (await Promise.all(files.map(async (file) => {
+            const image = await uploadFile({
+                buffer: file.buffer,
+                fileName: file.originalname
+            });
+            return image;
+        }))).forEach(img => images.push(img));
+    }
+
+    const price = req.body.priceAmount;
+    const stock = req.body.stock;
+    const attributes = JSON.parse(req.body.attributes || "{}");
+    // Ensure attributes is an object (not an array) before proceeding
+    if (typeof attributes !== 'object' || Array.isArray(attributes)) {
+        return res.status(400).json({ message: "Attributes must be an object", success: false });
+    }
+    // Add the new variant to the product
+    product.variants.push({
+        images,
+        attributes,
+        stock: stock || 0,
+        price: { amount: price, currency: req.body.priceCurrency || product.price.currency }
+    });
+
+    await product.save();
+
+    res.status(201).json({
+        message: "Variant added successfully",
+        success: true,
+        variant: product.variants[product.variants.length - 1]
+    });
+}
+
+// Exported above with function declaration

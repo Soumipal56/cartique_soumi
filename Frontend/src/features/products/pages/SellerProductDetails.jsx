@@ -7,11 +7,13 @@ const SellerProductDetails = () => {
     const { id, productId } = useParams();
     const resolvedId = id || productId;
     const navigate = useNavigate();
-    const { handleGetProductById } = useProduct();
+    const { handleGetProductById, handleAddProductVariant } = useProduct();
     const [product, setProduct] = useState(null);
+    const [likes, setLikes] = useState(0);
+    const [liked, setLiked] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
-    const [newVariant, setNewVariant] = useState({ images: [], attributes: {}, price: { amount: '', currency: 'INR' } });
+    const [newVariant, setNewVariant] = useState({ images: [], attributes: {}, price: { amount: '', currency: 'INR' }, stock: '' });
     const [attrEntries, setAttrEntries] = useState([{ key: '', value: '' }]);
 
     const handleVariantImages = (e) => {
@@ -42,7 +44,12 @@ const SellerProductDetails = () => {
         setAttrEntries((prev) => prev.filter((_, i) => i !== idx));
     };
 
-    const handleAddVariant = () => {
+    const handleAddVariant = async () => {
+        // Ensure stock is provided and non‑negative before creating the variant
+        if (newVariant.stock === undefined || newVariant.stock === null || newVariant.stock === '' || newVariant.stock < 0) {
+            alert('Please provide a valid stock quantity (0 or more).');
+            return;
+        }
         const attributes = attrEntries.reduce((acc, { key, value }) => {
             if (key) acc[key] = value;
             return acc;
@@ -50,12 +57,23 @@ const SellerProductDetails = () => {
         const variant = {
             images: newVariant.images,
             attributes,
-            stock: 0,
+            stock: newVariant.stock,
             price: newVariant.price,
         };
         console.log("New variant", variant);
-        // TODO: integrate with backend API to save variant
-        setNewVariant({ images: [], attributes: {}, price: { amount: "", currency: "INR" } });
+        
+        try {
+            const response = await handleAddProductVariant(product._id, variant);
+            console.log('Variant added:', response);
+            // Refresh product data to show new variant
+            const refreshed = await handleGetProductById(resolvedId);
+            setProduct(refreshed);
+        } catch (err) {
+            console.error('Error adding variant:', err);
+            alert('Failed to add variant. See console for details.');
+        }
+
+        setNewVariant({ images: [], attributes: {}, price: { amount: "", currency: "INR" }, stock: '' });
         setAttrEntries([{ key: "", value: "" }]);
     };
 
@@ -64,15 +82,16 @@ const SellerProductDetails = () => {
         handleGetProductById(resolvedId)
             .then(data => {
                 setProduct(data);
+                setLikes(data.likes || 0);
             })
             .finally(() => setIsLoading(false));
     }, [resolvedId]);
 
     const formatPrice = (price) => {
-        if (!price) return '';
+        if (!price || price.amount == null || isNaN(price.amount)) return '';
         const symbols = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
         const symbol = symbols[price.currency] || price.currency + ' ';
-        return `${symbol}${price.amount.toLocaleString()}`;
+        return `${symbol}${Number(price.amount).toLocaleString()}`;
     };
 
     if (isLoading) {
@@ -142,9 +161,18 @@ const SellerProductDetails = () => {
                     {/* Product Details */}
                     <div className="flex flex-col">
                         <h1 className="font-outfit text-4xl md:text-5xl font-bold mb-4">{product.title}</h1>
-                        <div className="text-3xl font-semibold text-[#10b981] mb-8 font-outfit">
-                            {formatPrice(product.price)}
-                        </div>
+                         <div className="flex items-center space-x-4 mb-8">
+                             <div className="text-3xl font-semibold text-[#10b981] font-outfit">
+                                 {formatPrice(product.price)}
+                             </div>
+                             <button onClick={() => {
+                                 setLiked(!liked);
+                                 setLikes(liked ? likes - 1 : likes + 1);
+                             }} className="flex items-center space-x-1 text-gray-400 hover:text-[#10b981] transition-colors">
+                                 {liked ? "❤️" : "🤍"}
+                                 <span>{likes}</span>
+                             </button>
+                         </div>
                         
                         <div className="bg-white/5 border border-white/5 rounded-2xl p-6 mb-8 backdrop-blur-md">
                             <h3 className="text-lg font-medium mb-3 font-outfit text-gray-200">Description</h3>
@@ -175,9 +203,12 @@ const SellerProductDetails = () => {
                                   <p className="text-red-400">No attributes defined.</p>
                                 )}
                                 {/* Variant Price */}
-                                {variant.price && (
-                                  <p className="text-[#10b981] mt-2">{formatPrice(variant.price)}</p>
-                                )}
+                                {variant.stock !== undefined && (
+                                   <p className="text-gray-400 mt-2">Stock: {variant.stock}</p>
+                                 )}
+                                 {variant.price && (
+                                   <p className="text-[#10b981] mt-2">{formatPrice(variant.price)}</p>
+                                 )}
                               </div>
                             ))}
                           </div>
@@ -223,6 +254,7 @@ const SellerProductDetails = () => {
                                     <option value="GBP">GBP</option>
                                     <option value="JPY">JPY</option>
                                 </select>
+                                <input type="number" placeholder="Stock" value={newVariant.stock} onChange={e => setNewVariant(prev => ({ ...prev, stock: e.target.value === '' ? '' : Number(e.target.value) }))} min={0} required className="w-full mt-2 px-2 py-1 bg-white/5 rounded" />
                             </div>
                             <button onClick={handleAddVariant} className="px-4 py-2 bg-[#10b981] text-gray-900 rounded hover:bg-[#0ea5e9] transition">Add Variant</button>
                         </div>

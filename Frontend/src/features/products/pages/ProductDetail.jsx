@@ -21,10 +21,10 @@ const ProductDetail = () => {
     }, [resolvedId]);
 
     const formatPrice = (price) => {
-        if (!price) return '';
+        if (!price || price.amount == null || isNaN(price.amount)) return '';
         const symbols = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
         const symbol = symbols[price.currency] || price.currency + ' ';
-        return `${symbol}${price.amount.toLocaleString()}`;
+        return `${symbol}${Number(price.amount).toLocaleString()}`;
     };
 
     if (isLoading) {
@@ -102,6 +102,29 @@ const ProductDetail = () => {
                             <h3 className="text-lg font-medium mb-3 font-outfit text-gray-200">Description</h3>
                             <p className="text-gray-400 leading-relaxed whitespace-pre-wrap">{product.description}</p>
                         </div>
+
+<div className="bg-white/5 border border-white/5 rounded-2xl p-6 mb-8 backdrop-blur-md">
+  <h3 className="text-lg font-medium mb-3 font-outfit text-gray-200">Variants</h3>
+  {product.variants && product.variants.length > 0 ? (
+    product.variants.map((variant, idx) => (
+      <div key={idx} className="border-b border-white/10 pb-4 mb-4 last:border-0 last:pb-0 last:mb-0">
+        <p className="text-gray-400">Stock: {variant.stock}</p>
+        {variant.price && (
+          <p className="text-[#10b981]">Price: {formatPrice(variant.price)}</p>
+        )}
+        {variant.attributes && (
+          <div className="mt-2">
+            {Array.from(variant.attributes.entries()).map(([key, value]) => (
+              <p key={key} className="text-gray-400">{key}: {value}</p>
+            ))}
+          </div>
+        )}
+      </div>
+    ))
+  ) : (
+    <p className="text-gray-400">No variants available</p>
+  )}
+</div>
 
 
                         <div className="mt-8 flex gap-4">
