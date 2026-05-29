@@ -80,4 +80,6 @@ export async function getProductById(req, res) {
         console.error("Error fetching product:", error);
         res.status(500).json({ message: "Failed to fetch product", error: error.message, success: false });
     }
-}
+}
+
+export 

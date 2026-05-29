@@ -184,7 +184,7 @@ const Dashboard = () => {
                                         product={product}
                                         formatPrice={formatPrice}
                                         formatDate={formatDate}
-                                        onClick={() => navigate(`/product/${product._id}`)}
+                                        onClick={() => navigate(`/seller/product/${product._id}`)}
                                     />
                                 ))}
                             </div>
