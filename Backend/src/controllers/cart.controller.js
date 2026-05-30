@@ -5,7 +5,7 @@ import { stockOfVariant } from "../dao/product.dao.js"
 export const addToCart = async (req, res) => {
 
     const { productId, variantId} = req.params
-    const {quantity: 1} = req.params
+    const {quantity = 1} = req.body
 
     const product = await productModel.findOne({
         _id: productId,
@@ -81,4 +81,24 @@ export const addToCart = async (req, res) => {
         success: true
     })
   
+}
+
+export const getCart = async (req, res) => {
+    const user = req.user
+
+    let cart = await cartModel.findOne({
+        user: user._id
+    }).populate("items.product")
+
+    if (!cart) {
+        cart = await cartModel.create({
+            user: user._id
+        })
+    }
+
+    return res.status(200).json({
+        message: "Cart fetched successfully",
+        success: true,
+        cart
+    })
 }

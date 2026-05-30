@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useProduct } from '../hooks/useProduct';
+import { useCart } from '../../cart/hook/useCart';
 
 const ProductDetail = () => {
     const { id, productId } = useParams();
@@ -11,6 +12,7 @@ const ProductDetail = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [activeImage, setActiveImage] = useState(0);
     const [selectedVariantIdx, setSelectedVariantIdx] = useState(null);
+    const { handleAddItem } = useCart();
 
     useEffect(() => {
         if (!resolvedId) return;
@@ -141,32 +143,46 @@ const ProductDetail = () => {
                             <p className="text-gray-400 leading-relaxed whitespace-pre-wrap">{product.description}</p>
                         </div>
 
-<div className="bg-white/5 border border-white/5 rounded-2xl p-6 mb-8 backdrop-blur-md">
-  <h3 className="text-lg font-medium mb-3 font-outfit text-gray-200">Variants</h3>
-  {product.variants && product.variants.length > 0 ? (
-    product.variants.map((variant, idx) => (
-      <div key={idx} className={`border-b border-white/10 pb-4 mb-4 last:border-0 last:pb-0 last:mb-0 ${selectedVariantIdx===idx ? 'bg-white/10' : ''}`} onClick={() => setSelectedVariantIdx(idx)}>
-                 <p className="text-gray-400">Stock: {getVariantValue('stock')}</p>
-        {variant.price && (
-          <p className="text-[#10b981]">Price: {formatPrice(getVariantValue('price'))}</p>
-        )}
-        {variant.attributes && (
-            <div className="mt-2">
-                {(variant.attributes instanceof Map ? Array.from(variant.attributes.entries()) : Object.entries(variant.attributes)).map(([key, value]) => (
-                    <p key={key} className="text-gray-400">{key}: {value}</p>
-                ))}
-            </div>
-        )}
-      </div>
-    ))
-  ) : (
-    <p className="text-gray-400">No variants available</p>
-  )}
-</div>
+                    {/* Variants Section - Redesigned with glassmorphic cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {product.variants && product.variants.length > 0 ? (
+                            product.variants.map((variant, idx) => {
+                                const isSelected = selectedVariantIdx === idx;
+                                return (
+                                    <div
+                                        key={idx}
+                                        className={`cursor-pointer p-4 rounded-xl border transition-all backdrop-blur-md ${isSelected ? 'bg-[#10b981]/20 border-[#10b981] shadow-lg' : 'bg-white/5 border-white/10'} hover:bg-white/10`}
+                                        onClick={() => setSelectedVariantIdx(idx)}
+                                    >
+                                        <p className="text-gray-400 mb-1">Stock: {variant.stock ?? getVariantValue('stock')}</p>
+                                        {variant.price && (
+                                            <p className="text-[#10b981] font-medium">Price: {formatPrice(variant.price)}</p>
+                                        )}
+                                        {variant.attributes && (
+                                            <div className="mt-2">
+                                                {(variant.attributes instanceof Map ? Array.from(variant.attributes.entries()) : Object.entries(variant.attributes)).map(([key, value]) => (
+                                                    <p key={key} className="text-gray-400 text-sm">{key}: {value}</p>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <p className="text-gray-400">No variants available</p>
+                        )}
+                    </div>
+
 
 
                         <div className="mt-8 flex gap-4">
-                            <button className="flex-1 bg-white/5 border border-[#10b981]/40 text-[#10b981] font-bold text-lg py-4 rounded-xl hover:bg-[#10b981]/10 hover:border-[#10b981] transition-all duration-300">
+                            <button onClick={() => {
+                                if (selectedVariantIdx === null) { alert('Please select a variant first'); return; }
+                                const variant = product.variants[selectedVariantIdx];
+                                handleAddItem(product._id ?? product.id, variant._id)
+                                    .then(() => alert('Item added to cart successfully!'))
+                                    .catch(err => alert(err.response?.data?.message || 'Failed to add to cart'));
+                            }} className="flex-1 bg-white/5 border border-[#10b981]/40 text-[#10b981] font-bold text-lg py-4 rounded-xl hover:bg-[#10b981]/10 hover:border-[#10b981] transition-all duration-300">
                                 Add to Cart
                             </button>
                             <button className="flex-1 bg-[#10b981] text-gray-900 font-bold text-lg py-4 rounded-xl hover:bg-[#0ea5e9] hover:text-white transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(14,165,233,0.4)]">
