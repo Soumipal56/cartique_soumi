@@ -10,6 +10,11 @@ export async function addToCart(productId, variantId, quantity = 1) {
     return response.data;
 }
 
+export async function updateCartItem(productId, variantId, quantity) {
+  const response = await cartApiInstance.put(`/update/${productId}/${variantId}`, { quantity });
+  return response.data;
+}
+
 export async function getCart() {
     const response = await cartApiInstance.get("/");
     return response.data;
