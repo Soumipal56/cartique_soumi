@@ -95,24 +95,6 @@ const CreateProduct = () => {
                 <div className="max-w-6xl mx-auto px-8 lg:px-16 xl:px-24">
 
                     {/* ── Top Bar ── */}
-                    <div className="pt-10 pb-0 flex items-center gap-5">
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="text-lg transition-colors duration-200 leading-none"
-                            style={{ color: '#a3a3a3' }}
-                            aria-label="Go back"
-                            onMouseEnter={e => e.currentTarget.style.color = '#10b981'}
-                            onMouseLeave={e => e.currentTarget.style.color = '#a3a3a3'}
-                        >
-                            ←
-                        </button>
-                        <span
-                            className="text-xs font-bold tracking-[0.32em] uppercase"
-                            style={{ fontFamily: "'Hanken Grotesk', sans-serif", color: '#10b981' }}
-                        >
-                            CARTIQUE.
-                        </span>
-                    </div>
 
                     {/* ── Page Header ── */}
                     <div className="pt-10 pb-0">

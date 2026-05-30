@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useProduct } from '../hooks/useProduct';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { Link } from 'react-router';
 
 const Dashboard = () => {
     const { handleGetSellerProduct } = useProduct();
@@ -57,24 +56,7 @@ const Dashboard = () => {
                 <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-16 xl:px-24 relative z-10">
 
                     {/* ── Top Bar ── */}
-                    <div className="pt-10 pb-0 flex items-center justify-between">
-                        <div className="flex items-center gap-5">
-                            <button
-                                onClick={() => navigate(-1)}
-                                className="text-gray-400 hover:text-[#10b981] transition-colors duration-300 flex items-center justify-center w-10 h-10 rounded-full glass-card hover:bg-white/5"
-                                aria-label="Go back"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <Link to="/" className="inline-block group">
-                                <span className="font-outfit text-xl font-bold tracking-widest text-white flex items-center gap-2">
-                                    CARTIQUE
-                                    <div className="w-1.5 h-1.5 rounded-full bg-[#10b981] group-hover:shadow-[0_0_12px_#10b981] transition-all duration-300"></div>
-                                </span>
-                            </Link>
-                        </div>
+                    <div className="flex justify-end pt-4">
                         <button
                             onClick={() => navigate('/seller/create-product')}
                             className="flex items-center gap-2 px-5 py-2.5 text-xs font-semibold rounded-xl transition-all duration-500 shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:-translate-y-0.5 bg-[#10b981] text-gray-900 hover:bg-[#34d399]"
