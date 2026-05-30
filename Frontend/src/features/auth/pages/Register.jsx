@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../hook/useAuth';
 import { ContinueWithGoogle } from '../components/ContinueWithGoogle';
-import Nav from '../../Shared/Components/Nav';
 
 const Register = () => {
     const { handleRegister } = useAuth();
@@ -94,7 +93,12 @@ const Register = () => {
                     
                     {/* Header */}
                     <div className="text-center mb-8">
-                        <Nav />
+                        <Link to="/" className="inline-block group mb-4">
+                            <span className="font-outfit text-2xl font-bold tracking-widest text-white flex items-center gap-2 justify-center">
+                                CARTIQUE
+                                <div className="w-2 h-2 rounded-full bg-[#10b981] group-hover:shadow-[0_0_15px_#10b981] transition-all duration-300"></div>
+                            </span>
+                        </Link>
                         <h1 className="font-outfit text-4xl sm:text-5xl font-semibold mb-2 tracking-tight">Create Account</h1>
                         <p className="text-gray-400 text-sm sm:text-base">Join us and experience the extraordinary</p>
                     </div>

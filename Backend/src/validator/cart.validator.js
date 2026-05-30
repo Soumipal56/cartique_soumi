@@ -16,3 +16,19 @@ export const validateAddToCart = [
         .isInt({min: 1}).withMessage("Quantity must be at least 1"),
     validateRequest
 ]
+
+export const validateUpdateCart = [
+    param("productId").isMongoId().withMessage("Invalid product ID"),
+    param("variantId").isMongoId().withMessage("Invalid variant ID"),
+    body("quantity")
+        .notEmpty().withMessage("Quantity is required")
+        .isInt({ min: 1 }).withMessage("Quantity must be at least 1")
+        .toInt(),
+    validateRequest
+]
+
+export const validateRemoveFromCart = [
+    param("productId").isMongoId().withMessage("Invalid product ID"),
+    param("variantId").isMongoId().withMessage("Invalid variant ID"),
+    validateRequest
+]

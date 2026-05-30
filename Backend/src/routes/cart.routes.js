@@ -1,6 +1,6 @@
 import express from "express";
 import { authenticateUser } from "../middleware/auth.middleware.js";
-import { validateAddToCart } from "../validator/cart.validator.js";
+import { validateAddToCart, validateUpdateCart, validateRemoveFromCart } from "../validator/cart.validator.js";
 import { addToCart, getCart, updateCartItem, removeFromCart } from "../controllers/cart.controller.js";
 
 
@@ -16,8 +16,8 @@ const router = express.Router();
  */
 router.post("/add/:productId/:variantId", authenticateUser, validateAddToCart, addToCart)
 
-router.put("/update/:productId/:variantId", authenticateUser, updateCartItem)
-router.delete("/remove/:productId/:variantId", authenticateUser, removeFromCart)
+router.put("/update/:productId/:variantId", authenticateUser, validateUpdateCart, updateCartItem)
+router.delete("/remove/:productId/:variantId", authenticateUser, validateRemoveFromCart, removeFromCart)
 
 router.get("/", authenticateUser, getCart)
 
