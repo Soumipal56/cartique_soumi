@@ -179,9 +179,18 @@ const ProductDetail = () => {
                             <button onClick={() => {
                                 if (selectedVariantIdx === null) { alert('Please select a variant first'); return; }
                                 const variant = product.variants[selectedVariantIdx];
-                                handleAddItem(product._id ?? product.id, variant._id)
-                                    .then(() => alert('Item added to cart successfully!'))
-                                    .catch(err => alert(err.response?.data?.message || 'Failed to add to cart'));
+                                const imageUrl = variant?.images?.[0]?.url || product.images?.[0]?.url || null;
+                                const symbols = { INR: '₹', USD: '$', EUR: '€', GBP: '£' };
+                                const price = variant?.price || product.price;
+                                const priceStr = price ? `${symbols[price.currency] || ''}${Number(price.amount).toLocaleString()}` : null;
+                                const variantAttrs = variant?.attributes ? Object.entries(variant.attributes).map(([k, v]) => `${k}: ${v}`).join(', ') : null;
+
+                                handleAddItem(product._id ?? product.id, variant._id, 1, {
+                                    title: product.title,
+                                    image: imageUrl,
+                                    price: priceStr,
+                                    variantLabel: variantAttrs,
+                                }).catch(err => alert(err.response?.data?.message || 'Failed to add to cart'));
                             }} className="flex-1 bg-white/5 border border-[#10b981]/40 text-[#10b981] font-bold text-lg py-4 rounded-xl hover:bg-[#10b981]/10 hover:border-[#10b981] transition-all duration-300">
                                 Add to Cart
                             </button>

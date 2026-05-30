@@ -1,12 +1,16 @@
 import { addToCart, getCart, updateCartItem, removeFromCart } from '../service/cart.api';
 import { useDispatch } from 'react-redux';
 import { setItems } from '../state/cart.slice';
+import { showCartToast } from '../state/toast.slice';
 
 export const useCart = () => {
     const dispatch = useDispatch();
 
-    const handleAddItem = async (productId, variantId, quantity = 1) => {
+    const handleAddItem = async (productId, variantId, quantity = 1, productInfo = null) => {
         const response = await addToCart(productId, variantId, quantity);
+        if (productInfo) {
+            dispatch(showCartToast(productInfo));
+        }
         return response;
     };
 
