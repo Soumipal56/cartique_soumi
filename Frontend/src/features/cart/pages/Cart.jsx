@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useCart } from '../hook/useCart';
 
 const Cart = () => {
+    const user = useSelector(state => state.auth.user);
     const cartItems = useSelector(state => state.cart.items);
     const { handleGetCart } = useCart();
 
@@ -26,7 +27,9 @@ const Cart = () => {
     return (
         <div className="min-h-screen bg-[#050505] text-white p-8 font-inter">
             <div className="max-w-5xl mx-auto">
-                <h1 className="text-4xl font-bold font-outfit text-[#10b981] mb-8">Your Cart</h1>
+                <h1 className="text-4xl font-bold font-outfit text-[#10b981] mb-8">
+                    {user?.fullname ? `${user.fullname}'s Cart` : 'Your Cart'}
+                </h1>
                 
                 {(!cartItems || cartItems.length === 0) ? (
                     <div className="bg-white/5 border border-white/5 rounded-2xl p-12 backdrop-blur-md flex flex-col items-center justify-center">
@@ -42,24 +45,40 @@ const Cart = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Cart Items List */}
                         <div className="lg:col-span-2 space-y-4">
-                            {cartItems.map((item) => (
-                                <div key={item._id} className="bg-white/5 border border-white/5 rounded-2xl p-4 backdrop-blur-md flex gap-6 hover:bg-white/10 transition-colors">
-                                    <div className="w-32 h-32 rounded-xl bg-black/40 overflow-hidden shrink-0 border border-white/10">
-                                        {item.product?.images?.[0] ? (
-                                            <img src={item.product.images[0].url} alt={item.product.title} className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-gray-600">No Image</div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 flex flex-col justify-center">
-                                        <h3 className="text-xl font-semibold font-outfit text-white mb-2">{item.product?.title || 'Unknown Product'}</h3>
-                                        <div className="text-[#10b981] font-medium text-lg mb-2">{formatPrice(item.price)}</div>
-                                        <div className="flex items-center gap-4 text-gray-400">
-                                            <span className="bg-white/5 px-3 py-1 rounded-lg">Qty: {item.quantity}</span>
+                            {cartItems.map((item) => {
+                                const variant = item.product?.variants?.find(v => v._id === item.variant);
+                                const imageUrl = variant?.images?.[0]?.url || item.product?.images?.[0]?.url;
+                                
+                                return (
+                                    <div key={item._id} className="bg-white/5 border border-white/5 rounded-2xl p-4 backdrop-blur-md flex gap-6 hover:bg-white/10 transition-colors">
+                                        <div className="w-32 h-32 rounded-xl bg-black/40 overflow-hidden shrink-0 border border-white/10">
+                                            {imageUrl ? (
+                                                <img src={imageUrl} alt={item.product?.title || 'Product'} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-gray-600">No Image</div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 flex flex-col justify-center">
+                                            <h3 className="text-xl font-semibold font-outfit text-white mb-2">{item.product?.title || 'Unknown Product'}</h3>
+                                            
+                                            {variant?.attributes && Object.keys(variant.attributes).length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mb-2">
+                                                    {Object.entries(variant.attributes).map(([key, value]) => (
+                                                        <span key={key} className="text-xs bg-white/10 text-gray-300 px-2 py-1 rounded-md border border-white/5">
+                                                            <span className="opacity-70 capitalize">{key}:</span> {value}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            
+                                            <div className="text-[#10b981] font-medium text-lg mb-2">{formatPrice(item.price)}</div>
+                                            <div className="flex items-center gap-4 text-gray-400">
+                                                <span className="bg-white/5 px-3 py-1 rounded-lg">Qty: {item.quantity}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
 
                         {/* Order Summary */}
