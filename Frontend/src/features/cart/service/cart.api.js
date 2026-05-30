@@ -15,6 +15,11 @@ export async function updateCartItem(productId, variantId, quantity) {
   return response.data;
 }
 
+export async function removeFromCart(productId, variantId) {
+  const response = await cartApiInstance.delete(`/remove/${productId}/${variantId}`);
+  return response.data;
+}
+
 export async function getCart() {
     const response = await cartApiInstance.get("/");
     return response.data;

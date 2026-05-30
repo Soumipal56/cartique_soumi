@@ -5,7 +5,7 @@ import { useCart } from '../hook/useCart';
 const Cart = () => {
     const user = useSelector(state => state.auth.user);
     const cartItems = useSelector(state => state.cart.items);
-    const { handleGetCart } = useCart();
+    const { handleGetCart, handleUpdateQuantity, handleRemoveItem } = useCart();
 
     useEffect(() => {
         handleGetCart();
@@ -73,7 +73,35 @@ const Cart = () => {
                                             
                                             <div className="text-[#10b981] font-medium text-lg mb-2">{formatPrice(item.price)}</div>
                                             <div className="flex items-center gap-4 text-gray-400">
-                                                <span className="bg-white/5 px-3 py-1 rounded-lg">Qty: {item.quantity}</span>
+                                                <div className="flex items-center bg-white/5 rounded-lg border border-white/10">
+                                                    <button 
+                                                        onClick={() => {
+                                                            if (item.quantity > 1) {
+                                                                handleUpdateQuantity(item.product?._id || item.product, item.variant, item.quantity - 1);
+                                                            } else {
+                                                                handleRemoveItem(item.product?._id || item.product, item.variant);
+                                                            }
+                                                        }}
+                                                        className="px-3 py-1 hover:bg-white/10 hover:text-[#10b981] transition-colors rounded-l-lg"
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <span className="px-3 py-1 font-medium text-white border-x border-white/10 min-w-[2.5rem] text-center">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button 
+                                                        onClick={() => handleUpdateQuantity(item.product?._id || item.product, item.variant, item.quantity + 1)}
+                                                        className="px-3 py-1 hover:bg-white/10 hover:text-[#10b981] transition-colors rounded-r-lg"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                                <button 
+                                                    onClick={() => handleRemoveItem(item.product?._id || item.product, item.variant)}
+                                                    className="text-sm text-gray-500 hover:text-red-400 transition-colors ml-2"
+                                                >
+                                                    Remove
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
