@@ -17,7 +17,15 @@ export const useCart = () => {
     const handleGetCart = async () => {
         try {
             const data = await getCart();
-            dispatch(setItems(data.cart.items || []));
+            let items = [];
+            if (Array.isArray(data.cart)) {
+                if (data.cart.length > 0) {
+                    items = data.cart[0].items || [];
+                }
+            } else if (data.cart && data.cart.items) {
+                items = data.cart.items;
+            }
+            dispatch(setItems(items));
         } catch (error) {
             console.error("Failed to fetch cart:", error);
         }

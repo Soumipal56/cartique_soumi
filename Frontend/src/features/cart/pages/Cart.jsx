@@ -20,8 +20,21 @@ const Cart = () => {
 
     const calculateTotal = () => {
         return cartItems.reduce((total, item) => {
-            return total + (item.price?.amount || 0) * item.quantity;
+            const variant = Array.isArray(item.product?.variants) 
+                ? item.product.variants.find(v => v._id === item.variant)
+                : item.product?.variants;
+            const price = variant?.price?.amount || item.price?.amount || 0;
+            return total + price * item.quantity;
         }, 0);
+    };
+
+    const getCartCurrency = () => {
+        if (!cartItems || cartItems.length === 0) return 'USD';
+        const firstItem = cartItems[0];
+        const variant = Array.isArray(firstItem.product?.variants) 
+            ? firstItem.product.variants.find(v => v._id === firstItem.variant)
+            : firstItem.product?.variants;
+        return variant?.price?.currency || firstItem.price?.currency || 'USD';
     };
 
     return (
@@ -45,8 +58,12 @@ const Cart = () => {
                         {/* Cart Items List */}
                         <div className="lg:col-span-2 space-y-4">
                             {cartItems.map((item) => {
-                                const variant = item.product?.variants?.find(v => v._id === item.variant);
+                                const variant = Array.isArray(item.product?.variants) 
+                                    ? item.product.variants.find(v => v._id === item.variant)
+                                    : item.product?.variants;
                                 const imageUrl = variant?.images?.[0]?.url || item.product?.images?.[0]?.url;
+                                const itemPriceAmount = variant?.price?.amount || item.price?.amount;
+                                const itemPriceCurrency = variant?.price?.currency || item.price?.currency;
                                 
                                 return (
                                     <div key={item._id} className="bg-white border border-outline rounded-2xl p-4 flex gap-6 hover:border-primary transition-all group shadow-sm">
@@ -70,7 +87,7 @@ const Cart = () => {
                                                 </div>
                                             )}
                                             
-                                            <div className="text-on-surface font-medium text-xl mb-3">{formatPrice(item.price)}</div>
+                                            <div className="text-on-surface font-medium text-xl mb-3">{formatPrice({ amount: itemPriceAmount, currency: itemPriceCurrency })}</div>
                                             <div className="flex items-center gap-4 text-secondary">
                                                 <div className="flex items-center bg-white rounded-lg border border-outline overflow-hidden">
                                                     <button 
@@ -117,7 +134,7 @@ const Cart = () => {
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
                                         <span className="text-on-surface font-medium">
-                                            {formatPrice({ amount: calculateTotal(), currency: cartItems[0]?.price?.currency || 'USD' })}
+                                            {formatPrice({ amount: calculateTotal(), currency: getCartCurrency() })}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -128,7 +145,7 @@ const Cart = () => {
                                 <div className="flex justify-between items-end mb-8">
                                     <span className="text-lg font-medium text-on-surface">Total</span>
                                     <span className="text-3xl font-bold text-on-surface">
-                                        {formatPrice({ amount: calculateTotal(), currency: cartItems[0]?.price?.currency || 'USD' })}
+                                        {formatPrice({ amount: calculateTotal(), currency: getCartCurrency() })}
                                     </span>
                                 </div>
                                 <button className="w-full bg-primary text-white font-medium text-lg py-3.5 rounded-xl hover:bg-primary-container transition-all shadow-sm">
