@@ -1,40 +1,41 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useCart } from "../hook/useCart";
-import { useRazorpay } from "react-razorpay";
+// import { useRazorpay } from "react-razorpay";
 
 const Cart = () => {
   const user = useSelector((state) => state.auth.user);
   const cartItems = useSelector((state) => state.cart.items);
   const { handleGetCart, handleUpdateQuantity, handleRemoveItem } = useCart();
-  const { error, isLoading, Razorpay } = useRazorpay();
+  //   const { error, isLoading, Razorpay } = useRazorpay();
 
   useEffect(() => {
     handleGetCart();
   }, []);
 
-  const handlePayment = () => {
-    const options = {
-      key: "YOUR_RAZORPAY_KEY",
-      amount: 50000, // Amount in paise
-      currency: "INR",
-      name: "Test Company",
-      description: "Test Transaction",
-      order_id: "order_9A33XWu170gUtm", // Generate order_id on server
-      handler: (response) => {
-        console.log(response);
-        alert("Payment Successful!");
-      },
-      prefill: {
-        name: "John Doe",
-        email: "john.doe@example.com",
-        contact: "9999999999",
-      },
-      theme: {
-        color: "#F37254",
-      },
-    };
-  };
+  //   const handlePayment = () => {
+  //     const options = {
+  //       key: "rzp_test_Sw0W3Hz59SyCCC",
+  //       amount: 50000, // Amount in paise
+  //       currency: "INR",
+  //       name: "Cartique",
+  //       description: "Cart Payment",
+  //       image: "/logo.png",
+  //       order_id: "order_9A33XWu170gUtm", // Generate order_id on server
+  //       handler: (response) => {
+  //         console.log(response);
+  //         alert("Payment Successful!");
+  //       },
+  //       prefill: {
+  //         name: "John Doe",
+  //         email: "john.doe@example.com",
+  //         contact: "9999999999",
+  //       },
+  //       theme: {
+  //         color: "#F37254",
+  //       },
+  //     };
+  //   };
 
   const formatPrice = (price) => {
     if (!price || price.amount == null || isNaN(price.amount)) return "";
