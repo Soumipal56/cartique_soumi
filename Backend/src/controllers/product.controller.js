@@ -136,4 +136,62 @@ export async function addProductVariant(req, res){
     });
 }
 
+export async function updateProduct(req, res) {
+    try {
+        const { id } = req.params;
+        const { title, description, priceAmount, priceCurrency } = req.body;
+        const seller = req.user;
+
+        const product = await productModel.findOne({ _id: id, seller: seller._id });
+        if (!product) {
+            return res.status(404).json({ message: "Product not found or unauthorized", success: false });
+        }
+
+        if (title) product.title = title;
+        if (description) product.description = description;
+        if (priceAmount) {
+            product.price.amount = Number(priceAmount);
+        }
+        if (priceCurrency) {
+            product.price.currency = priceCurrency;
+        }
+
+        if (req.files && req.files.length > 0) {
+            const images = await Promise.all(req.files.map(async (file) => {
+                return await uploadFile({
+                    buffer: file.buffer,
+                    fileName: file.originalname
+                });
+            }));
+            product.images = images;
+        }
+
+        await product.save();
+
+        res.status(200).json({ message: "Product updated successfully", success: true, product });
+    } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).json({ message: "Failed to update product", error: error.message, success: false });
+    }
+}
+
+export async function deleteProduct(req, res) {
+    try {
+        const { id } = req.params;
+        const seller = req.user;
+
+        const product = await productModel.findOneAndDelete({ _id: id, seller: seller._id });
+        if (!product) {
+            return res.status(404).json({ message: "Product not found or unauthorized", success: false });
+        }
+
+        res.status(200).json({ message: "Product deleted successfully", success: true });
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        res.status(500).json({ message: "Failed to delete product", error: error.message, success: false });
+    }
+}
+
+
+
 // Exported above with function declaration

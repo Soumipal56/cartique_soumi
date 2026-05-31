@@ -1,4 +1,4 @@
-import { createProduct, getSellerProduct, getAllProducts, getProductById, addProductVariant } from "../service/product.api";
+import { createProduct, getSellerProduct, getAllProducts, getProductById, addProductVariant, deleteProduct, updateProduct } from "../service/product.api";
 import { setSellerProducts } from "../state/product.slice";
 import { useDispatch } from "react-redux";
 
@@ -52,5 +52,27 @@ export const useProduct = () => {
         }
     }
 
-    return { handleCreateProduct, handleGetSellerProduct, handleGetAllProducts, handleGetProductById, handleAddProductVariant }
+
+
+    async function handleUpdateProduct(id, formData) {
+        try {
+            const data = await updateProduct(id, formData);
+            return data.product;
+        } catch (error) {
+            console.error("Failed to update product:", error.response?.status, error.response?.data?.message || error.message);
+            throw error;
+        }
+    }
+
+    async function handleDeleteProduct(id) {
+        try {
+            const data = await deleteProduct(id);
+            return data;
+        } catch (error) {
+            console.error("Failed to delete product:", error.response?.status, error.response?.data?.message || error.message);
+            throw error;
+        }
+    }
+
+    return { handleCreateProduct, handleGetSellerProduct, handleGetAllProducts, handleGetProductById, handleAddProductVariant, handleDeleteProduct, handleUpdateProduct }
 }

@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { useProduct } from '../hooks/useProduct';
 import ProductDetail from './ProductDetail';
+import ImageMagnifier from '../components/ImageMagnifier';
 
 const SellerProductDetails = () => {
     const { id, productId } = useParams();
     const resolvedId = id || productId;
     const navigate = useNavigate();
-    const { handleGetProductById, handleAddProductVariant } = useProduct();
+    const { handleGetProductById, handleAddProductVariant, handleDeleteProduct } = useProduct();
     const [product, setProduct] = useState(null);
     const [likes, setLikes] = useState(0);
     const [liked, setLiked] = useState(false);
@@ -80,6 +81,16 @@ const SellerProductDetails = () => {
 
         setNewVariant({ images: [], attributes: {}, price: { amount: "", currency: "INR" }, stock: '' });
         setAttrEntries([{ key: "", value: "" }]);
+    };
+
+    const handleDelete = async () => {
+        if (!window.confirm("Are you sure you want to delete this product? This action cannot be undone.")) return;
+        try {
+            await handleDeleteProduct(product._id);
+            navigate('/seller/dashboard'); 
+        } catch (error) {
+            alert("Failed to delete product. " + (error.response?.data?.message || ""));
+        }
     };
 
     useEffect(() => {
@@ -155,7 +166,7 @@ const SellerProductDetails = () => {
                     <div className="flex flex-col gap-4">
                         <div className="w-full aspect-square bg-black/40 rounded-3xl overflow-hidden border border-white/5 relative group">
                             {images.length > 0 ? (
-                                <img src={images[activeImage].url} alt={product.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                <ImageMagnifier src={images[activeImage].url} alt={product.title} />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-600">No Image</div>
                             )}
@@ -242,10 +253,10 @@ const SellerProductDetails = () => {
                         )}
 
                         <div className="mt-8 flex gap-4">
-                            <button className="flex-1 bg-white/5 border border-blue-500/40 text-blue-500 font-bold text-lg py-4 rounded-xl hover:bg-blue-500/10 hover:border-blue-500 transition-all duration-300">
+                            <button onClick={() => navigate(`/seller/edit-product/${product._id}`)} className="flex-1 bg-white/5 border border-blue-500/40 text-blue-500 font-bold text-lg py-4 rounded-xl hover:bg-blue-500/10 hover:border-blue-500 transition-all duration-300">
                                 Edit Product
                             </button>
-                            <button className="flex-1 bg-red-500/10 border border-red-500/40 text-red-500 font-bold text-lg py-4 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-300">
+                            <button onClick={handleDelete} className="flex-1 bg-red-500/10 border border-red-500/40 text-red-500 font-bold text-lg py-4 rounded-xl hover:bg-red-500 hover:text-white transition-all duration-300">
                                 Delete Product
                             </button>
                         </div>
