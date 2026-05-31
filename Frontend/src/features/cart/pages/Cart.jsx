@@ -25,19 +25,18 @@ const Cart = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white p-8 font-inter">
-            <div className="max-w-5xl mx-auto">
-                <h1 className="text-4xl font-bold font-outfit text-[#10b981] mb-8">
+        <div className="min-h-screen bg-surface-dim font-sans text-on-surface selection:bg-primary/20 pb-24">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-16 pt-24">
+                <h1 className="font-serif text-[40px] md:text-5xl font-semibold mb-10 text-on-surface leading-tight">
                     {user?.fullname ? `${user.fullname}'s Cart` : 'Your Cart'}
                 </h1>
                 
                 {(!cartItems || cartItems.length === 0) ? (
-                    <div className="bg-white/5 border border-white/5 rounded-2xl p-12 backdrop-blur-md flex flex-col items-center justify-center">
-                        <svg className="w-16 h-16 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <p className="text-gray-400 text-xl font-medium">Your cart is empty.</p>
-                        <button className="mt-6 px-6 py-3 bg-[#10b981] text-gray-900 font-bold rounded-xl hover:bg-[#34d399] transition-colors">
+                    <div className="bg-white border border-outline rounded-2xl p-16 flex flex-col items-center justify-center text-center shadow-sm">
+                        <span className="material-symbols-outlined text-6xl text-tertiary mb-4">shopping_cart</span>
+                        <h2 className="text-2xl font-serif font-semibold text-on-surface mb-2">Your cart is empty</h2>
+                        <p className="text-secondary text-lg mb-8">Looks like you haven't added anything to your cart yet.</p>
+                        <button className="px-8 py-3 bg-primary text-white font-medium rounded-xl hover:bg-primary-container transition-colors shadow-sm">
                             Continue Shopping
                         </button>
                     </div>
@@ -50,30 +49,30 @@ const Cart = () => {
                                 const imageUrl = variant?.images?.[0]?.url || item.product?.images?.[0]?.url;
                                 
                                 return (
-                                    <div key={item._id} className="bg-white/5 border border-white/5 rounded-2xl p-4 backdrop-blur-md flex gap-6 hover:bg-white/10 transition-colors">
-                                        <div className="w-32 h-32 rounded-xl bg-black/40 overflow-hidden shrink-0 border border-white/10">
+                                    <div key={item._id} className="bg-white border border-outline rounded-2xl p-4 flex gap-6 hover:border-primary transition-all group shadow-sm">
+                                        <div className="w-32 h-32 rounded-xl bg-surface-dim overflow-hidden shrink-0 border border-outline">
                                             {imageUrl ? (
-                                                <img src={imageUrl} alt={item.product?.title || 'Product'} className="w-full h-full object-cover" />
+                                                <img src={imageUrl} alt={item.product?.title || 'Product'} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500" />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-gray-600">No Image</div>
+                                                <div className="w-full h-full flex items-center justify-center text-tertiary text-sm">No Image</div>
                                             )}
                                         </div>
                                         <div className="flex-1 flex flex-col justify-center">
-                                            <h3 className="text-xl font-semibold font-outfit text-white mb-2">{item.product?.title || 'Unknown Product'}</h3>
+                                            <h3 className="font-serif text-[22px] font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors">{item.product?.title || 'Unknown Product'}</h3>
                                             
                                             {variant?.attributes && Object.keys(variant.attributes).length > 0 && (
                                                 <div className="flex flex-wrap gap-2 mb-2">
                                                     {Object.entries(variant.attributes).map(([key, value]) => (
-                                                        <span key={key} className="text-xs bg-white/10 text-gray-300 px-2 py-1 rounded-md border border-white/5">
+                                                        <span key={key} className="text-xs bg-surface-dim text-secondary px-2 py-1 rounded border border-outline">
                                                             <span className="opacity-70 capitalize">{key}:</span> {value}
                                                         </span>
                                                     ))}
                                                 </div>
                                             )}
                                             
-                                            <div className="text-[#10b981] font-medium text-lg mb-2">{formatPrice(item.price)}</div>
-                                            <div className="flex items-center gap-4 text-gray-400">
-                                                <div className="flex items-center bg-white/5 rounded-lg border border-white/10">
+                                            <div className="text-on-surface font-medium text-xl mb-3">{formatPrice(item.price)}</div>
+                                            <div className="flex items-center gap-4 text-secondary">
+                                                <div className="flex items-center bg-white rounded-lg border border-outline overflow-hidden">
                                                     <button 
                                                         onClick={() => {
                                                             if (item.quantity > 1) {
@@ -82,24 +81,25 @@ const Cart = () => {
                                                                 handleRemoveItem(item.product?._id || item.product, item.variant);
                                                             }
                                                         }}
-                                                        className="px-3 py-1 hover:bg-white/10 hover:text-[#10b981] transition-colors rounded-l-lg"
+                                                        className="px-3 py-1.5 hover:bg-surface-dim hover:text-primary transition-colors flex items-center justify-center"
                                                     >
-                                                        -
+                                                        <span className="material-symbols-outlined text-[18px]">remove</span>
                                                     </button>
-                                                    <span className="px-3 py-1 font-medium text-white border-x border-white/10 min-w-[2.5rem] text-center">
+                                                    <span className="px-3 py-1.5 font-medium text-on-surface border-x border-outline min-w-[2.5rem] text-center">
                                                         {item.quantity}
                                                     </span>
                                                     <button 
                                                         onClick={() => handleUpdateQuantity(item.product?._id || item.product, item.variant, item.quantity + 1)}
-                                                        className="px-3 py-1 hover:bg-white/10 hover:text-[#10b981] transition-colors rounded-r-lg"
+                                                        className="px-3 py-1.5 hover:bg-surface-dim hover:text-primary transition-colors flex items-center justify-center"
                                                     >
-                                                        +
+                                                        <span className="material-symbols-outlined text-[18px]">add</span>
                                                     </button>
                                                 </div>
                                                 <button 
                                                     onClick={() => handleRemoveItem(item.product?._id || item.product, item.variant)}
-                                                    className="text-sm text-gray-500 hover:text-red-400 transition-colors ml-2"
+                                                    className="text-sm font-medium text-secondary hover:text-error transition-colors flex items-center gap-1"
                                                 >
+                                                    <span className="material-symbols-outlined text-[18px]">delete</span>
                                                     Remove
                                                 </button>
                                             </div>
@@ -111,28 +111,28 @@ const Cart = () => {
 
                         {/* Order Summary */}
                         <div className="lg:col-span-1">
-                            <div className="bg-white/5 border border-[#10b981]/20 rounded-2xl p-6 backdrop-blur-md sticky top-8">
-                                <h2 className="text-2xl font-bold font-outfit text-white mb-6">Summary</h2>
-                                <div className="space-y-4 text-gray-300 border-b border-white/10 pb-6 mb-6">
+                            <div className="bg-white border border-outline rounded-2xl p-6 sticky top-24 shadow-sm">
+                                <h2 className="font-serif text-2xl font-semibold text-on-surface mb-6">Order Summary</h2>
+                                <div className="space-y-4 text-secondary border-b border-outline pb-6 mb-6">
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
-                                        <span className="text-white font-medium">
+                                        <span className="text-on-surface font-medium">
                                             {formatPrice({ amount: calculateTotal(), currency: cartItems[0]?.price?.currency || 'USD' })}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span>Shipping</span>
-                                        <span className="text-[#10b981]">Free</span>
+                                        <span className="text-primary font-medium">Free</span>
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-end mb-8">
-                                    <span className="text-lg font-medium">Total</span>
-                                    <span className="text-3xl font-bold text-[#10b981]">
+                                    <span className="text-lg font-medium text-on-surface">Total</span>
+                                    <span className="text-3xl font-bold text-on-surface">
                                         {formatPrice({ amount: calculateTotal(), currency: cartItems[0]?.price?.currency || 'USD' })}
                                     </span>
                                 </div>
-                                <button className="w-full bg-[#10b981] text-gray-900 font-bold text-lg py-4 rounded-xl hover:bg-[#0ea5e9] hover:text-white transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(14,165,233,0.4)]">
-                                    Checkout Now
+                                <button className="w-full bg-primary text-white font-medium text-lg py-3.5 rounded-xl hover:bg-primary-container transition-all shadow-sm">
+                                    Proceed to Checkout
                                 </button>
                             </div>
                         </div>

@@ -41,12 +41,12 @@ const ProductDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+      <div className="min-h-screen bg-surface-dim flex items-center justify-center">
         <div className="flex gap-2">
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="w-4 h-4 rounded-full bg-[#10b981] animate-bounce"
+              className="w-3 h-3 rounded-full bg-primary animate-bounce"
               style={{ animationDelay: `${i * 150}ms` }}
             />
           ))}
@@ -57,13 +57,13 @@ const ProductDetail = () => {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white font-inter">
-        <h1 className="text-3xl font-bold mb-4 font-outfit">
+      <div className="min-h-screen bg-surface-dim flex flex-col items-center justify-center text-on-surface font-sans">
+        <h1 className="text-3xl font-semibold mb-4 font-serif">
           Product not found
         </h1>
         <button
           onClick={() => navigate(-1)}
-          className="px-6 py-2 bg-[#10b981] text-gray-900 rounded-xl font-semibold hover:bg-[#34d399] transition-all"
+          className="px-6 h-12 bg-primary text-on-primary rounded font-medium hover:bg-primary-container transition-all"
         >
           Go Back
         </button>
@@ -111,15 +111,11 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] font-inter text-white selection:bg-[#10b981]/30 relative overflow-hidden pb-20">
-      {/* Background Effects */}
-      <div className="fixed top-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#10b981]/10 blur-[120px] pointer-events-none z-0"></div>
-      <div className="fixed bottom-[-10%] left-[-10%] w-[35vw] h-[35vw] rounded-full bg-[#0ea5e9]/10 blur-[100px] pointer-events-none z-0"></div>
-
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-16 relative z-10 pt-10">
+    <div className="min-h-screen bg-surface-dim font-sans text-on-surface selection:bg-primary/20 pb-20">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-16 pt-10">
         <button
           onClick={() => navigate(-1)}
-          className="text-gray-400 hover:text-[#10b981] transition-colors duration-300 flex items-center justify-center w-10 h-10 rounded-full bg-white/5 border border-white/5 hover:bg-white/10 mb-8"
+          className="text-secondary hover:text-primary transition-colors duration-300 flex items-center justify-center w-10 h-10 rounded-full bg-white border border-outline hover:border-primary mb-8"
         >
           <svg
             className="w-5 h-5"
@@ -136,17 +132,17 @@ const ProductDetail = () => {
           </svg>
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Image Gallery */}
           <div className="flex flex-col gap-4">
-            <div className="w-full aspect-square bg-black/40 rounded-3xl overflow-hidden border border-white/5 relative group">
+            <div className="w-full aspect-square bg-white rounded-lg overflow-hidden border border-outline relative group">
               {displayedImages.length > 0 ? (
                 <ImageMagnifier
                   src={displayedImages[activeImage].url}
                   alt={product.title}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-600">
+                <div className="w-full h-full flex items-center justify-center text-tertiary">
                   No Image
                 </div>
               )}
@@ -157,7 +153,7 @@ const ProductDetail = () => {
                   <button
                     key={img._id || i}
                     onClick={() => setActiveImage(i)}
-                    className={`w-24 h-24 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${activeImage === i ? "border-[#10b981]" : "border-transparent opacity-50 hover:opacity-100"}`}
+                    className={`w-24 h-24 shrink-0 rounded overflow-hidden border-[1.5px] transition-all ${activeImage === i ? "border-primary" : "border-transparent opacity-60 hover:opacity-100"}`}
                   >
                     <img
                       src={img.url}
@@ -172,83 +168,92 @@ const ProductDetail = () => {
 
           {/* Product Details */}
           <div className="flex flex-col">
-            <h1 className="font-outfit text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="font-serif text-[32px] md:text-[40px] font-semibold mb-4 leading-tight">
               {product.title}
             </h1>
-            <div className="mb-8">
-              <div className="flex items-center gap-4 flex-wrap">
-                <span className="text-3xl font-semibold text-[#10b981] font-outfit">
+            <div className="mb-8 border-b border-outline pb-8">
+              <div className="flex items-end gap-4 flex-wrap">
+                <span className="text-3xl font-medium font-sans text-on-surface">
                   {formatPrice(product.price)}
                 </span>
-                {product.originalPrice &&
-                  product.originalPrice.amount > product.price.amount && (
-                    <>
-                      <span className="text-xl text-gray-500 line-through font-outfit">
-                        {formatPrice(product.originalPrice)}
-                      </span>
-                      <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/30 animate-pulse">
-                        You save{" "}
-                        {formatPrice({
-                          amount:
-                            product.originalPrice.amount - product.price.amount,
-                          currency: product.price.currency,
-                        })}
-                        !
-                      </span>
-                    </>
-                  )}
+                
+                {product.previousPrice && product.price && product.previousPrice.amount !== product.price.amount ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl text-tertiary line-through font-sans mb-1">
+                      {formatPrice(product.previousPrice)}
+                    </span>
+                    <span className={`px-2.5 py-1 rounded-sm text-xs font-semibold mb-1 border ${product.price.amount > product.previousPrice.amount ? 'text-error bg-error-container/20 border-error/20' : 'text-primary bg-primary-fixed border-primary/20'}`}>
+                      {product.price.amount > product.previousPrice.amount ? 'Increased by' : 'Decreased by'} {formatPrice({ amount: Math.abs(product.price.amount - product.previousPrice.amount), currency: product.price.currency })}
+                    </span>
+                  </div>
+                ) : product.originalPrice && product.price && product.originalPrice.amount > product.price.amount ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl text-tertiary line-through font-sans mb-1">
+                      {formatPrice(product.originalPrice)}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-sm text-xs font-semibold bg-primary-fixed text-primary border border-primary/20 mb-1">
+                      Save {formatPrice({ amount: product.originalPrice.amount - product.price.amount, currency: product.price.currency })}
+                    </span>
+                  </div>
+                ) : null}
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/5 rounded-2xl p-6 mb-8 backdrop-blur-md">
-              <h3 className="text-lg font-medium mb-3 font-outfit text-gray-200">
+            <div className="bg-white border border-outline rounded-[4px] p-6 mb-8">
+              <h3 className="text-base font-semibold mb-3 font-sans text-on-surface">
                 Description
               </h3>
-              <p className="text-gray-400 leading-relaxed whitespace-pre-wrap">
+              <p className="text-secondary text-[15px] leading-relaxed whitespace-pre-wrap">
                 {product.description}
               </p>
             </div>
 
-            {/* Variants Section - Redesigned with glassmorphic cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {product.variants && product.variants.length > 0 ? (
-                product.variants.map((variant, idx) => {
-                  const isSelected = selectedVariantIdx === idx;
-                  return (
-                    <div
-                      key={idx}
-                      className={`cursor-pointer p-4 rounded-xl border transition-all backdrop-blur-md ${isSelected ? "bg-[#10b981]/20 border-[#10b981] shadow-lg" : "bg-white/5 border-white/10"} hover:bg-white/10`}
-                      onClick={() => setSelectedVariantIdx(idx)}
-                    >
-                      <p className="text-gray-400 mb-1">
-                        Stock: {variant.stock ?? getVariantValue("stock")}
-                      </p>
-                      {variant.price && (
-                        <p className="text-[#10b981] font-medium">
-                          Price: {formatPrice(variant.price)}
-                        </p>
-                      )}
-                      {variant.attributes && (
-                        <div className="mt-2">
-                          {(variant.attributes instanceof Map
-                            ? Array.from(variant.attributes.entries())
-                            : Object.entries(variant.attributes)
-                          ).map(([key, value]) => (
-                            <p key={key} className="text-gray-400 text-sm">
-                              {key}: {value}
+            {/* Variants Section */}
+            <div className="mb-8">
+                <h3 className="text-base font-semibold mb-4 font-sans text-on-surface">
+                    Available Options
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {product.variants && product.variants.length > 0 ? (
+                    product.variants.map((variant, idx) => {
+                      const isSelected = selectedVariantIdx === idx;
+                      return (
+                        <div
+                          key={idx}
+                          className={`cursor-pointer p-4 rounded-[4px] border transition-all ${isSelected ? "bg-primary-fixed/30 border-primary" : "bg-white border-outline hover:border-primary/50"}`}
+                          onClick={() => setSelectedVariantIdx(idx)}
+                        >
+                          <p className="text-secondary text-sm mb-1">
+                            Stock: {variant.stock ?? getVariantValue("stock")}
+                          </p>
+                          {variant.price && (
+                            <p className="text-on-surface font-medium text-[15px]">
+                              {formatPrice(variant.price)}
                             </p>
-                          ))}
+                          )}
+                          {variant.attributes && (
+                            <div className="mt-2 pt-2 border-t border-outline/50">
+                              {(variant.attributes instanceof Map
+                                ? Array.from(variant.attributes.entries())
+                                : Object.entries(variant.attributes)
+                              ).map(([key, value]) => (
+                                <p key={key} className="text-tertiary text-xs uppercase tracking-wider mt-1">
+                                  {key}: <span className="text-secondary font-medium normal-case tracking-normal">{value}</span>
+                                </p>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-gray-400">No variants available</p>
-              )}
+                      );
+                    })
+                  ) : (
+                    <p className="text-tertiary text-sm italic">No variants available</p>
+                  )}
+                </div>
             </div>
 
-            <div className="mt-8 flex gap-4">
+            {/* CTA Buttons */}
+            <div className="flex gap-4 pt-4">
               <button
                 onClick={() => {
                   if (selectedVariantIdx === null) {
@@ -282,11 +287,11 @@ const ProductDetail = () => {
                     ),
                   );
                 }}
-                className="flex-1 bg-white/5 border border-[#10b981]/40 text-[#10b981] font-bold text-lg py-4 rounded-xl hover:bg-[#10b981]/10 hover:border-[#10b981] transition-all duration-300"
+                className="flex-1 bg-white border-2 border-primary text-primary font-medium text-base h-12 rounded-[4px] hover:bg-primary-fixed/20 transition-all duration-300"
               >
                 Add to Cart
               </button>
-              <button className="flex-1 bg-[#10b981] text-gray-900 font-bold text-lg py-4 rounded-xl hover:bg-[#0ea5e9] hover:text-white transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(14,165,233,0.4)]">
+              <button className="flex-1 bg-primary text-on-primary font-medium text-base h-12 rounded-[4px] hover:bg-primary-container transition-all duration-300">
                 Buy Now
               </button>
             </div>

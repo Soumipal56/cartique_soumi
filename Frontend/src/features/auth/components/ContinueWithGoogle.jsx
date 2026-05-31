@@ -5,7 +5,7 @@ import React from 'react';
 export const ContinueWithGoogle = () => (
   <a
     href="/api/auth/google"
-    className="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-white text-sm font-medium text-[#202124] border border-[#dadce0] shadow-sm hover:bg-[#f8f9fa] transition-colors"
+    className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-white text-sm font-medium text-on-surface border border-outline shadow-sm hover:bg-surface-container-low transition-colors"
   >
     {/* Google "G" logo */}
     <svg
