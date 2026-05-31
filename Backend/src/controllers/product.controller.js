@@ -150,7 +150,18 @@ export async function updateProduct(req, res) {
         if (title) product.title = title;
         if (description) product.description = description;
         if (priceAmount) {
-            product.price.amount = Number(priceAmount);
+            const newAmount = Number(priceAmount);
+            const oldAmount = product.price.amount;
+            if (newAmount < oldAmount) {
+                // Price decreased — save the old price as originalPrice
+                product.originalPrice = { amount: oldAmount, currency: product.price.currency };
+            } else if (newAmount > oldAmount && product.originalPrice) {
+                // Price went back up — clear originalPrice if new price >= original
+                if (newAmount >= product.originalPrice.amount) {
+                    product.originalPrice = undefined;
+                }
+            }
+            product.price.amount = newAmount;
         }
         if (priceCurrency) {
             product.price.currency = priceCurrency;
@@ -192,6 +203,3 @@ export async function deleteProduct(req, res) {
     }
 }
 
-
-
-// Exported above with function declaration

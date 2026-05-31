@@ -122,15 +122,37 @@ const ProductCard = ({ product, formatPrice, onClick }) => {
                         ))}
                     </div>
                 )}
-                <div className="flex justify-between items-center">
-                    <span className="font-outfit text-lg font-semibold text-[#10b981]">
-                        {formatPrice(product.price)}
-                    </span>
-                    {product.seller && (
-                        <span className="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded-md">
-                            By {product.seller.name || 'Seller'}
+                <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-outfit text-lg font-semibold text-[#10b981]">
+                            {formatPrice(product.price)}
                         </span>
-                    )}
+                        {product.previousPrice && product.price && product.previousPrice.amount !== product.price.amount ? (
+                            <span className="text-sm text-gray-500 line-through font-outfit">
+                                {formatPrice(product.previousPrice)}
+                            </span>
+                        ) : product.originalPrice && product.price && product.originalPrice.amount > product.price.amount ? (
+                            <span className="text-sm text-gray-500 line-through font-outfit">
+                                {formatPrice(product.originalPrice)}
+                            </span>
+                        ) : null}
+                    </div>
+                    <div className="flex justify-between items-center gap-2">
+                        {product.previousPrice && product.price && product.previousPrice.amount !== product.price.amount ? (
+                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${product.price.amount > product.previousPrice.amount ? 'text-red-500 bg-red-500/15 border-red-500/30' : 'text-[#10b981] bg-[#10b981]/15 border-[#10b981]/30'}`}>
+                                {product.price.amount > product.previousPrice.amount ? 'Increased by' : 'Decreased by'} {formatPrice({ amount: Math.abs(product.price.amount - product.previousPrice.amount), currency: product.price.currency })}
+                            </span>
+                        ) : product.originalPrice && product.price && product.originalPrice.amount > product.price.amount ? (
+                            <span className="text-xs font-semibold text-[#10b981] bg-[#10b981]/15 px-2 py-0.5 rounded-full border border-[#10b981]/30 whitespace-nowrap">
+                                Save {formatPrice({ amount: product.originalPrice.amount - product.price.amount, currency: product.price.currency })}
+                            </span>
+                        ) : null}
+                        {product.seller && (
+                            <span className="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded-md ml-auto">
+                                By {product.seller.name || 'Seller'}
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

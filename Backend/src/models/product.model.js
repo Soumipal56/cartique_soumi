@@ -19,6 +19,10 @@ const productSchema = new mongoose.Schema({
         type: priceSchema,
         required: true
     },
+    originalPrice: {
+        type: priceSchema,
+        required: false
+    },
     images: [
         {
             url: {

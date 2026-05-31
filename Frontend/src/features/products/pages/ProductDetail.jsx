@@ -25,8 +25,6 @@ const ProductDetail = () => {
       .finally(() => setIsLoading(false));
   }, [resolvedId]);
 
-
-
   // Set default variant index when product data is loaded
   useEffect(() => {
     if (product && product.variants && product.variants.length > 0) {
@@ -177,8 +175,29 @@ const ProductDetail = () => {
             <h1 className="font-outfit text-4xl md:text-5xl font-bold mb-4">
               {product.title}
             </h1>
-            <div className="text-3xl font-semibold text-[#10b981] mb-8 font-outfit">
-              {formatPrice(product.price)}
+            <div className="mb-8">
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="text-3xl font-semibold text-[#10b981] font-outfit">
+                  {formatPrice(product.price)}
+                </span>
+                {product.originalPrice &&
+                  product.originalPrice.amount > product.price.amount && (
+                    <>
+                      <span className="text-xl text-gray-500 line-through font-outfit">
+                        {formatPrice(product.originalPrice)}
+                      </span>
+                      <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#10b981]/15 text-[#10b981] border border-[#10b981]/30 animate-pulse">
+                        You save{" "}
+                        {formatPrice({
+                          amount:
+                            product.originalPrice.amount - product.price.amount,
+                          currency: product.price.currency,
+                        })}
+                        !
+                      </span>
+                    </>
+                  )}
+              </div>
             </div>
 
             <div className="bg-white/5 border border-white/5 rounded-2xl p-6 mb-8 backdrop-blur-md">
@@ -273,8 +292,6 @@ const ProductDetail = () => {
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   );
