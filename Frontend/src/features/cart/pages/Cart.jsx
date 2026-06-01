@@ -1,41 +1,69 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useCart } from "../hook/useCart";
-// import { useRazorpay } from "react-razorpay";
+import { useRazorpay } from "react-razorpay";
+import axios from "axios";
 
 const Cart = () => {
   const user = useSelector((state) => state.auth.user);
   const cartItems = useSelector((state) => state.cart.items);
   const { handleGetCart, handleUpdateQuantity, handleRemoveItem } = useCart();
-  //   const { error, isLoading, Razorpay } = useRazorpay();
+  const { error, isLoading, Razorpay } = useRazorpay();
 
   useEffect(() => {
     handleGetCart();
   }, []);
 
-  //   const handlePayment = () => {
-  //     const options = {
-  //       key: "rzp_test_Sw0W3Hz59SyCCC",
-  //       amount: 50000, // Amount in paise
-  //       currency: "INR",
-  //       name: "Cartique",
-  //       description: "Cart Payment",
-  //       image: "/logo.png",
-  //       order_id: "order_9A33XWu170gUtm", // Generate order_id on server
-  //       handler: (response) => {
-  //         console.log(response);
-  //         alert("Payment Successful!");
-  //       },
-  //       prefill: {
-  //         name: "John Doe",
-  //         email: "john.doe@example.com",
-  //         contact: "9999999999",
-  //       },
-  //       theme: {
-  //         color: "#F37254",
-  //       },
-  //     };
-  //   };
+  const handlePayment = async () => {
+    try {
+      const amount = calculateTotal();
+      if (amount <= 0) return;
+      const currency = getCartCurrency();
+      
+      const { data } = await axios.post(
+        "http://localhost:3000/api/payment/create-order",
+        { amount, currency },
+        { withCredentials: true }
+      );
+
+      if (!data.success) {
+        alert("Failed to create order");
+        return;
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sw0W3Hz59SyCCC", // Fallback to user's hardcoded key
+        amount: data.order.amount, 
+        currency: data.order.currency,
+        name: "Cartique",
+        description: "Cart Payment",
+        image: "/logo.png",
+        order_id: data.order.id, 
+        handler: (response) => {
+          console.log(response);
+          alert("Payment Successful!");
+        },
+        prefill: {
+          name: user?.fullname || "John Doe",
+          email: user?.email || "john.doe@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#F37254",
+        },
+      };
+
+      const rzp1 = new Razorpay(options);
+      rzp1.on("payment.failed", function (response) {
+        console.error(response.error);
+        alert("Payment failed!");
+      });
+      rzp1.open();
+    } catch (err) {
+      console.error(err);
+      alert("Error initiating payment");
+    }
+  };
 
   const formatPrice = (price) => {
     if (!price || price.amount == null || isNaN(price.amount)) return "";

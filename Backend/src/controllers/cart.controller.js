@@ -249,3 +249,13 @@ export const removeFromCart = async (req, res) => {
       .json({ message: "Failed to remove from cart", error: err.message });
   }
 };
+
+export const createOrderController = async (req, res) => {
+  const order = await createOrder({ amount: 1000, currency: "INR" });
+
+  return res.status(200).json({
+    message: "Order created successfully",
+    success: true,
+    order,
+  });
+};
