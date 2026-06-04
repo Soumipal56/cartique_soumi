@@ -1,4 +1,4 @@
-import { addToCart, getCart, updateCartItem, removeFromCart, createCartOrder } from '../service/cart.api';
+import { addToCart, getCart, updateCartItem, removeFromCart, createCartOrder, verifyCartOrder } from '../service/cart.api';
 import { useDispatch } from 'react-redux';
 import { setItems } from '../state/cart.slice';
 import { showCartToast } from '../state/toast.slice';
@@ -54,5 +54,10 @@ export const useCart = () => {
         return data; // Return full data object to get keyId as well
     };
 
-    return { handleAddItem, handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder };
+    const handleVerifyCartOrder = async (razorpay_order_id, razorpay_payment_id, razorpay_signature) => {
+        const data = await verifyCartOrder({ razorpay_order_id, razorpay_payment_id, razorpay_signature });
+        return data.success;
+    }
+
+    return { handleAddItem, handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder };
 };

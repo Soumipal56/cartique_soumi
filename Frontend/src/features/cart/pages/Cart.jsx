@@ -2,12 +2,14 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useCart } from "../hook/useCart";
 import { useRazorpay } from "react-razorpay";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Cart = () => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const cartItems = useSelector((state) => state.cart.items);
-  const { handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder } = useCart();
+  const { handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder } = useCart();
   const { error, isLoading, Razorpay } = useRazorpay();
 
   useEffect(() => {
@@ -34,9 +36,26 @@ const Cart = () => {
         name: "Cartique",
         description: "Test Transaction",
         order_id: data.order.id,
-        handler: (response) => {
-          console.log("Payment Successful:", response);
-          alert("Payment Successful!");
+        handler: async (response) => {
+          try {
+            const isVerified = await handleVerifyCartOrder(
+              response.razorpay_order_id,
+              response.razorpay_payment_id,
+              response.razorpay_signature
+            );
+            if (isVerified) {
+              console.log("Payment Verified:", response);
+              alert("Payment Successful!");
+              handleGetCart();
+              navigate(`/order-success?order_id=${response.razorpay_order_id}`);
+            } else {
+              console.error("Payment verification failed:", response);
+              alert("Payment Verification Failed!");
+            }
+          } catch (err) {
+            console.error("Payment verification error:", err);
+            alert("Payment Verification Error!");
+          }
         },
         prefill: {
           name: user?.fullname || "John Doe",
