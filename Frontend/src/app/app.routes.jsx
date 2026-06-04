@@ -10,6 +10,7 @@ import SellerProductDetails from "../features/products/pages/SellerProductDetail
 import Home from "../features/products/pages/Home";
 import Cart from "../features/cart/pages/Cart";
 import OrderSuccess from "../features/cart/pages/OrderSuccess";
+import PaymentFailed from "../features/cart/pages/PaymentFailed";
 import AppLayout from "./Applayout";
 
 export const routes = createBrowserRouter([
@@ -45,6 +46,14 @@ export const routes = createBrowserRouter([
         element: (
           <Protected>
             <OrderSuccess />
+          </Protected>
+        ),
+      },
+      {
+        path: "/payment-failed",
+        element: (
+          <Protected>
+            <PaymentFailed />
           </Protected>
         ),
       },

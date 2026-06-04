@@ -1,13 +1,13 @@
 import axios from "axios";
-import { config } from "../../../../config/config";
 
-const API_URL = `${config.API_URL}/address`;
+const addressApiInstance = axios.create({
+    baseURL: "http://localhost:3000/api/address",
+    withCredentials: true,
+});
 
 export const addAddressApi = async (addressData) => {
     try {
-        const response = await axios.post(API_URL, addressData, {
-            withCredentials: true
-        });
+        const response = await addressApiInstance.post("/", addressData);
         return response.data;
     } catch (error) {
         throw error.response?.data || error;
@@ -16,9 +16,7 @@ export const addAddressApi = async (addressData) => {
 
 export const getAddressesApi = async () => {
     try {
-        const response = await axios.get(API_URL, {
-            withCredentials: true
-        });
+        const response = await addressApiInstance.get("/");
         return response.data;
     } catch (error) {
         throw error.response?.data || error;

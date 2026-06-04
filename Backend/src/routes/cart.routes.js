@@ -12,6 +12,7 @@ import {
   removeFromCart,
   createOrderController,
   verifyOrderController,
+  failOrderController
 } from "../controllers/cart.controller.js";
 
 const router = express.Router();
@@ -52,6 +53,8 @@ router.post("/payment/create/order", authenticateUser, createOrderController);
 
 router.get("/", authenticateUser, getCart);
 
-router.post("/payment/verify/order", authenticateUser, verifyOrderController)
+router.post("/payment/verify/order", authenticateUser, verifyOrderController);
+
+router.post("/payment/fail/order", authenticateUser, failOrderController);
 
 export default router;

@@ -1,4 +1,4 @@
-import { addToCart, getCart, updateCartItem, removeFromCart, createCartOrder, verifyCartOrder } from '../service/cart.api';
+import { addToCart, getCart, updateCartItem, removeFromCart, createCartOrder, verifyCartOrder, failCartOrder } from '../service/cart.api';
 import { useDispatch } from 'react-redux';
 import { setItems } from '../state/cart.slice';
 import { showCartToast } from '../state/toast.slice';
@@ -55,7 +55,7 @@ export const useCart = () => {
             return data;
         } catch (err) {
             console.error(err);
-            toast.error(err.message || "Failed to create order");
+            alert(err.message || "Failed to create order");
             return null;
         }
     };
@@ -65,5 +65,15 @@ export const useCart = () => {
         return data.success;
     }
 
-    return { handleAddItem, handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder };
+    const handleFailCartOrder = async (razorpay_order_id) => {
+        try {
+            const data = await failCartOrder(razorpay_order_id);
+            return data.success;
+        } catch (err) {
+            console.error("Failed to mark order as failed:", err);
+            return false;
+        }
+    };
+
+    return { handleAddItem, handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder, handleFailCartOrder };
 };

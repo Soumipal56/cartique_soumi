@@ -357,3 +357,20 @@ export const verifyOrderController = async (req, res) => {
     return res.status(500).json({ message: "Payment verification failed", error: err.message, success: false });
   }
 }
+
+export const failOrderController = async (req, res) => {
+  try {
+    const { razorpay_order_id } = req.body;
+    if (!razorpay_order_id) {
+        return res.status(400).json({ message: "Order ID is required", success: false });
+    }
+    await orderModel.updateOne(
+      { "razorpay.orderId": razorpay_order_id, status: "pending" },
+      { $set: { status: "failed" } }
+    );
+    return res.status(200).json({ message: "Order marked as failed", success: true });
+  } catch (err) {
+    console.error("Error failing order:", err);
+    return res.status(500).json({ message: "Failed to update order", error: err.message, success: false });
+  }
+};

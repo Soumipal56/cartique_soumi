@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { addAddressApi, getAddressesApi } from '../service/address.api';
-import toast from 'react-hot-toast';
 
 export const useAddress = () => {
     const [addresses, setAddresses] = useState([]);
@@ -25,13 +24,13 @@ export const useAddress = () => {
         try {
             const data = await addAddressApi(addressData);
             if (data.success) {
-                toast.success(data.message || "Address added!");
+                alert(data.message || "Address added!");
                 await fetchAddresses();
                 return data.address;
             }
         } catch (error) {
             console.error(error);
-            toast.error(error.message || "Failed to add address");
+            alert(error.message || "Failed to add address");
         } finally {
             setLoading(false);
         }

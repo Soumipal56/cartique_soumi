@@ -11,7 +11,7 @@ const Cart = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const cartItems = useSelector((state) => state.cart.items);
-  const { handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder } = useCart();
+  const { handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder, handleFailCartOrder } = useCart();
   const { error, isLoading, Razorpay } = useRazorpay();
   const [selectedAddressId, setSelectedAddressId] = useState(null);
 
@@ -75,9 +75,16 @@ const Cart = () => {
       };
 
       const razorpayInstance = new Razorpay(options);
-      razorpayInstance.on("payment.failed", function (response) {
+      razorpayInstance.on("payment.failed", async function (response) {
         console.error("Payment failed:", response.error);
-        alert("Payment failed!");
+        
+        // Notify backend that the order has failed
+        if (data && data.order && data.order.id) {
+          await handleFailCartOrder(data.order.id);
+        }
+        
+        const reason = response.error?.description || "Payment was cancelled or declined";
+        navigate(`/payment-failed?reason=${encodeURIComponent(reason)}`);
       });
       razorpayInstance.open();
     } catch (err) {
