@@ -2,6 +2,9 @@ import cartModel from "../models/cart.model.js";
 import productModel from "../models/product.model.js";
 import { stockOfVariant } from "../dao/product.dao.js";
 import mongoose from "mongoose";
+import { createOrder } from "../services/payment.service.js";
+import { config } from "../config/config.js";
+import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils.js";
 
 export const addToCart = async (req, res) => {
   const { productId, variantId } = req.params;
@@ -251,11 +254,61 @@ export const removeFromCart = async (req, res) => {
 };
 
 export const createOrderController = async (req, res) => {
-  const order = await createOrder({ amount: 1000, currency: "INR" });
+  try {
+    const { amount, currency } = req.body;
+    if (!amount) {
+      return res.status(400).json({ message: "Amount is required", success: false });
+    }
+    const order = await createOrder({ amount, currency: currency || "INR" });
 
-  return res.status(200).json({
-    message: "Order created successfully",
-    success: true,
-    order,
-  });
+    return res.status(200).json({
+      message: "Order created successfully",
+      success: true,
+      order,
+      keyId: config.RAZORPAY_KEY_ID,
+    });
+  } catch (err) {
+    console.error("Error creating order:", err);
+    return res.status(500).json({ message: "Failed to create order", error: err.message, success: false });
+  }
 };
+
+export const verifyOrderController = async (req, res) => {
+  const {
+    razorpay_payment_id,
+    razorpay_order_id,
+    razorpay_signature
+  } = req.body
+
+  const payment = await paymentModel.findOne({
+    "razorpay.orderId": razorpay_order_id,
+    status: "pending"
+  })
+
+  if(!payment){
+    return res.status(400).json({
+      message: "Payment not found",
+      success: false
+    })
+  }
+
+  const isPaymentValid = validatePaymentVerification({
+    order_id: razorpay_order_id,
+    payment_id: razorpay_payment_id,
+  }, razorpay_signature, config.RAZORPAY_KEY_SECRET)
+
+  if(!isPaymentValid){
+    payment.status = "failed",
+    await payment.save()
+    
+    return res.status(400).json({
+      message: "Invalid payment",
+      success: false
+    })
+  }
+
+  payment.status = "success"
+  await payment.save()
+
+  // create order
+}

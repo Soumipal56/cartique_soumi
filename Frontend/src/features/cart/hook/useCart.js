@@ -1,4 +1,4 @@
-import { addToCart, getCart, updateCartItem, removeFromCart } from '../service/cart.api';
+import { addToCart, getCart, updateCartItem, removeFromCart, createCartOrder } from '../service/cart.api';
 import { useDispatch } from 'react-redux';
 import { setItems } from '../state/cart.slice';
 import { showCartToast } from '../state/toast.slice';
@@ -49,5 +49,10 @@ export const useCart = () => {
         }
     };
 
-    return { handleAddItem, handleGetCart, handleUpdateQuantity, handleRemoveItem };
+    const handleCreateCartOrder = async (amount, currency) => {
+        const data = await createCartOrder(amount, currency);
+        return data; // Return full data object to get keyId as well
+    };
+
+    return { handleAddItem, handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder };
 };

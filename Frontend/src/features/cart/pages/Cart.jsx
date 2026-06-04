@@ -7,7 +7,7 @@ import axios from "axios";
 const Cart = () => {
   const user = useSelector((state) => state.auth.user);
   const cartItems = useSelector((state) => state.cart.items);
-  const { handleGetCart, handleUpdateQuantity, handleRemoveItem } = useCart();
+  const { handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder } = useCart();
   const { error, isLoading, Razorpay } = useRazorpay();
 
   useEffect(() => {
@@ -20,47 +20,42 @@ const Cart = () => {
       if (amount <= 0) return;
       const currency = getCartCurrency();
       
-      const { data } = await axios.post(
-        "http://localhost:3000/api/payment/create-order",
-        { amount, currency },
-        { withCredentials: true }
-      );
+      const data = await handleCreateCartOrder(amount, currency);
 
-      if (!data.success) {
+      if (!data || !data.success) {
         alert("Failed to create order");
         return;
       }
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sw0W3Hz59SyCCC", // Fallback to user's hardcoded key
-        amount: data.order.amount, 
+        key: data.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_Sw0ZcvQD52HrGu",
+        amount: data.order.amount,
         currency: data.order.currency,
         name: "Cartique",
-        description: "Cart Payment",
-        image: "/logo.png",
-        order_id: data.order.id, 
+        description: "Test Transaction",
+        order_id: data.order.id,
         handler: (response) => {
-          console.log(response);
+          console.log("Payment Successful:", response);
           alert("Payment Successful!");
         },
         prefill: {
           name: user?.fullname || "John Doe",
           email: user?.email || "john.doe@example.com",
-          contact: "9999999999",
+          contact: user?.contact || "9999999999",
         },
         theme: {
           color: "#F37254",
         },
       };
 
-      const rzp1 = new Razorpay(options);
-      rzp1.on("payment.failed", function (response) {
-        console.error(response.error);
+      const razorpayInstance = new Razorpay(options);
+      razorpayInstance.on("payment.failed", function (response) {
+        console.error("Payment failed:", response.error);
         alert("Payment failed!");
       });
-      rzp1.open();
+      razorpayInstance.open();
     } catch (err) {
-      console.error(err);
+      console.error("Error initiating payment:", err);
       alert("Error initiating payment");
     }
   };

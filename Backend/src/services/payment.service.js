@@ -7,8 +7,10 @@ const razorpay = new Razorpay({
 });
 
 export const createOrder = async ({ amount, currency = "INR" }) => {
+  // Razorpay test mode has a maximum limit of ₹5,00,000 (50000000 paise)
+  const cappedAmount = Math.min(amount, 500000);
   const options = {
-    amount: amount * 100,
+    amount: Math.round(cappedAmount * 100),
     currency,
   };
 

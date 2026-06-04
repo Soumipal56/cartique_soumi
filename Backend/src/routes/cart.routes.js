@@ -10,6 +10,7 @@ import {
   getCart,
   updateCartItem,
   removeFromCart,
+  createOrderController,
 } from "../controllers/cart.controller.js";
 
 const router = express.Router();
@@ -46,8 +47,10 @@ router.delete(
 /*
  * @route POST /api/cart/payment/create/order
  */
-router.post("/payment/create/order", authenticateUser);
+router.post("/payment/create/order", authenticateUser, createOrderController);
 
 router.get("/", authenticateUser, getCart);
+
+router.post("/payment/verify/order", authenticateUser,)
 
 export default router;
