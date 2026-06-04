@@ -49,9 +49,15 @@ export const useCart = () => {
         }
     };
 
-    const handleCreateCartOrder = async (amount, currency) => {
-        const data = await createCartOrder(amount, currency);
-        return data; // Return full data object to get keyId as well
+    const handleCreateCartOrder = async (amount, currency, addressId) => {
+        try {
+            const data = await createCartOrder(amount, currency, addressId);
+            return data;
+        } catch (err) {
+            console.error(err);
+            toast.error(err.message || "Failed to create order");
+            return null;
+        }
     };
 
     const handleVerifyCartOrder = async (razorpay_order_id, razorpay_payment_id, razorpay_signature) => {

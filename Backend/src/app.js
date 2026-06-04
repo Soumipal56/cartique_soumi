@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.js"
 import productRouter from "./routes/product.routes.js"
 import cartRouter from "./routes/cart.routes.js"
 import paymentRouter from "./routes/payment.routes.js"
+import addressRouter from "./routes/address.routes.js"
 import cors from "cors"
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
@@ -41,4 +42,5 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/payment", paymentRouter);
+app.use("/api/address", addressRouter);
 export default app;

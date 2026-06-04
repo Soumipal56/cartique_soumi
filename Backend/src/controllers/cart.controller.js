@@ -256,10 +256,14 @@ export const removeFromCart = async (req, res) => {
 
 export const createOrderController = async (req, res) => {
   try {
-    const { amount, currency } = req.body;
+    const { amount, currency, addressId } = req.body;
     if (!amount) {
       return res.status(400).json({ message: "Amount is required", success: false });
     }
+    if (!addressId) {
+      return res.status(400).json({ message: "Address ID is required", success: false });
+    }
+
     const order = await createOrder({ amount, currency: currency || "INR" });
 
     const cart = await cartModel.findOne({ user: req.user._id });
@@ -269,6 +273,7 @@ export const createOrderController = async (req, res) => {
 
     await orderModel.create({
       user: req.user._id,
+      address: addressId,
       items: cart.items,
       totalAmount: amount,
       currency: currency || "INR",

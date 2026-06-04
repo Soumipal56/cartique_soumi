@@ -4,6 +4,8 @@ import { useCart } from "../hook/useCart";
 import { useRazorpay } from "react-razorpay";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ShippingAddress from "../components/ShippingAddress";
+import { useState } from "react";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ const Cart = () => {
   const cartItems = useSelector((state) => state.cart.items);
   const { handleGetCart, handleUpdateQuantity, handleRemoveItem, handleCreateCartOrder, handleVerifyCartOrder } = useCart();
   const { error, isLoading, Razorpay } = useRazorpay();
+  const [selectedAddressId, setSelectedAddressId] = useState(null);
 
   useEffect(() => {
     handleGetCart();
@@ -20,9 +23,13 @@ const Cart = () => {
     try {
       const amount = calculateTotal();
       if (amount <= 0) return;
+      if (!selectedAddressId) {
+        alert("Please select a shipping address");
+        return;
+      }
       const currency = getCartCurrency();
       
-      const data = await handleCreateCartOrder(amount, currency);
+      const data = await handleCreateCartOrder(amount, currency, selectedAddressId);
 
       if (!data || !data.success) {
         alert("Failed to create order");
@@ -258,6 +265,12 @@ const Cart = () => {
                 <h2 className="font-serif text-2xl font-semibold text-on-surface mb-6">
                   Order Summary
                 </h2>
+                
+                <ShippingAddress 
+                  onSelectAddress={setSelectedAddressId} 
+                  selectedAddressId={selectedAddressId} 
+                />
+
                 <div className="space-y-4 text-secondary border-b border-outline pb-6 mb-6">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
