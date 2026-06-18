@@ -19,9 +19,13 @@ app.use(express.json()); // Body parser for JSON
 app.use(express.urlencoded({ extended: true })); // Body parser for URL-encoded data
 app.use(cookieParser()); // Cookie parser middleware
 app.use(cors({
-  origin: config.FRONTEND_URL,
-  methods:["GET","POST","PUT","DELETE"],
-  credentials:true
+  origin: [
+    "http://localhost:5173",
+    "https://cartique-frontend.onrender.com",
+    config.FRONTEND_URL,
+  ].filter(Boolean),
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 })); // Cross-Origin Resource Sharing middleware
 app.use(passport.initialize());
 passport.use(new GoogleStrategy({
