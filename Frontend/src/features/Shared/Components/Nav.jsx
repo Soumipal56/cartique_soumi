@@ -44,7 +44,12 @@ const Nav = () => {
                             </div>
                         </div>
                     ) : (
-                        <span className="text-sm font-medium text-[#6B6B6B]">Not logged in</span>
+                        <Link
+                            to="/login"
+                            className="text-sm font-medium text-white bg-[#1B2A4A] hover:bg-[#243660] px-5 py-2 rounded-lg transition-colors duration-200"
+                        >
+                            Login
+                        </Link>
                     )}
                 </div>
             </div>
