@@ -12,10 +12,7 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        fromService:
-          type: static
-          name: cartique-frontend
-          property: url
+        sync: false
       - key: MONGO_URI
         sync: false
       - key: JWT_SECRET
