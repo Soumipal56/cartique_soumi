@@ -13,7 +13,7 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        sync: false
+        value: https://cartique-frontend.onrender.com
       - key: MONGO_URI
         sync: false
       - key: JWT_SECRET
