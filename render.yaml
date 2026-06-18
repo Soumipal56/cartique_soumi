@@ -3,6 +3,7 @@ services:
   - type: web
     name: cartique-backend
     env: node
+    plan: free
     buildCommand: npm install
     startCommand: npm start
     rootDir: Backend
