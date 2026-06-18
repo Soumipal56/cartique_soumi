@@ -1,10 +1,10 @@
 import express from "express";
 import { addAddress, getUserAddresses } from "../controllers/address.controller.js";
-import { isAuth } from "../middleware/auth.middleware.js";
+import { authenticateUser } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/", isAuth, addAddress);
-router.get("/", isAuth, getUserAddresses);
+router.post("/", authenticateUser, addAddress);
+router.get("/", authenticateUser, getUserAddresses);
 
 export default router;
