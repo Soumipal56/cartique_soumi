@@ -11,7 +11,7 @@ import Home from "../features/products/pages/Home";
 import Cart from "../features/cart/pages/Cart";
 import OrderSuccess from "../features/cart/pages/OrderSuccess";
 import PaymentFailed from "../features/cart/pages/PaymentFailed";
-import AppLayout from "./Applayout";
+import AppLayout from "./AppLayout";
 
 export const routes = createBrowserRouter([
   {
