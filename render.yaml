@@ -29,7 +29,7 @@ services:
         sync: false
 
   # Frontend Static Site
-  - type: static
+  - type: static_site
     name: cartique-frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
