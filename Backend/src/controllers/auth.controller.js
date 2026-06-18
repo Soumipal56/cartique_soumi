@@ -119,5 +119,5 @@ export const googleCallback = async (req, res) => {
     
     res.cookie("token", token)
 
-    res.redirect("http://localhost:5173/")
+    res.redirect(config.FRONTEND_URL)
 }

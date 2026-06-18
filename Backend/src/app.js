@@ -19,7 +19,7 @@ app.use(express.json()); // Body parser for JSON
 app.use(express.urlencoded({ extended: true })); // Body parser for URL-encoded data
 app.use(cookieParser()); // Cookie parser middleware
 app.use(cors({
-  origin:"http://localhost:5173",
+  origin: config.FRONTEND_URL,
   methods:["GET","POST","PUT","DELETE"],
   credentials:true
 })); // Cross-Origin Resource Sharing middleware
