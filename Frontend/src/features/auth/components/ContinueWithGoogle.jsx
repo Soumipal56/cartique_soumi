@@ -1,10 +1,10 @@
-import React from 'react';
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // Simple Google Sign‑In button that redirects to backend OAuth flow.
 // No client ID required on the frontend.
 export const ContinueWithGoogle = () => (
   <a
-    href="/api/auth/google"
+    href={`${BACKEND_URL}/api/auth/google`}
     className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-white text-sm font-medium text-on-surface border border-outline shadow-sm hover:bg-surface-container-low transition-colors"
   >
     {/* Google "G" logo */}

@@ -38,7 +38,7 @@ services:
     rootDir: Frontend
     envVars:
       - key: VITE_API_URL
-        sync: false
+        value: https://cartique-backend-8on5.onrender.com
     routes:
       - type: rewrite
         source: /*
