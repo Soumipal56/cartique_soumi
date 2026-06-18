@@ -5,7 +5,7 @@ services:
     env: node
     buildCommand: npm install
     startCommand: npm start
-    rootDirectory: Backend
+    rootDir: Backend
     envVars:
       - key: NODE_ENV
         value: production
@@ -34,7 +34,7 @@ services:
     runtime: static
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-    rootDirectory: Frontend
+    rootDir: Frontend
     envVars:
       - key: VITE_API_URL
         fromService:
